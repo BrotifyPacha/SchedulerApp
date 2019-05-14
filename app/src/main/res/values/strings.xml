@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Scheduler</string>
+    <string name="auth_sign_in">Войти</string>
+    <string name="auth_later">Позже</string>
+    <string name="auth_sign_up_option">Нет аккаунта? Зарегистрируйтесь</string>
+    <string name="password_hint">Пароль</string>
+    <string name="login_hint">Имя пользователя</string>
+    <string name="auth_sign_up">Зарегистрироваться</string>
+    <string name="auth_sign_in_option">Уже есть аккаунт? Войдите</string>
+</resources>
