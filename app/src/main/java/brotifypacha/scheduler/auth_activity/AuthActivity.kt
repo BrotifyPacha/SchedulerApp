@@ -19,8 +19,6 @@ class AuthActivity : AppCompatActivity() {
 
     val TAG = AuthActivity::class.java.simpleName
 
-    val FRAGMENT_SIGN_IN_TAG = "fragment_sign_in"
-    val FRAGMENT_SIGN_UP_TAG = "fragment_sign_up"
     lateinit var authViewModel: AuthViewModel
 
 
@@ -30,12 +28,7 @@ class AuthActivity : AppCompatActivity() {
 
         authViewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
 
-        if (supportFragmentManager.findFragmentByTag(FRAGMENT_SIGN_IN_TAG) == null){
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.fragment_container, SignInFragment.newInstance(), FRAGMENT_SIGN_IN_TAG)
-                .commit()
-        }
+        //TODO: Н
     }
 
     fun onToSignUpFragment() {
@@ -59,7 +52,7 @@ class AuthActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container, signUpFragment, FRAGMENT_SIGN_UP_TAG)
+            .replace(R.id.fragment_container, signUpFragment)
             .addSharedElement(findViewById(R.id.main_button), "main_button")
             .addSharedElement(findViewById(R.id.later_button), "later_button")
             .addSharedElement(findViewById(R.id.username_layout), "username_layout")

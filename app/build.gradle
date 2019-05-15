@@ -31,7 +31,13 @@ dependencies {
     implementation 'androidx.core:core:1.0.2'
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0-beta01'
+    implementation 'com.google.android.material:material:1.1.0-alpha06'
+
+    def nav_version = "2.1.0-alpha03"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version" // For Java use navigation-fragment
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version" // For Java use navigation-ui
+
+    implementation 'android.arch.navigation:navigation-fragment:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
