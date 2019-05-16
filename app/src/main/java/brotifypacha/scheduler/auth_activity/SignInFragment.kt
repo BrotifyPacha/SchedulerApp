@@ -6,10 +6,13 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 
 import brotifypacha.scheduler.R
 import com.google.android.material.textfield.TextInputEditText
@@ -42,7 +45,41 @@ class SignInFragment : Fragment() {
         view.findViewById<TextView>(R.id.to_sign_up).setOnClickListener {
             viewModel.setUsername(usernameEdit.text.toString())
             viewModel.setPassword(passwordEdit.text.toString())
-            (this.activity as AuthActivity).onToSignUpFragment()
+
+            //val signUpFragment = SignUpFragment.newInstance().apply {
+            //    setEnterTransition(Fade().apply {
+            //        addTarget(R.id.to_sign_in)
+            //        addTarget(R.id.to_sign_up)
+            //    })
+            //    val shared_transition = TransitionSet().apply {
+            //        addTransition(ChangeBounds().apply { setDuration(100) })
+            //        setOrdering(TransitionSet.ORDERING_TOGETHER)
+            //    }
+            //    setSharedElementEnterTransition(shared_transition)
+            //    setSharedElementReturnTransition(shared_transition)
+
+            //    setReturnTransition(Fade().apply {
+            //        addTarget(R.id.to_sign_in)
+            //        addTarget(R.id.to_sign_up)
+            //    })
+            //}
+
+            //supportFragmentManager
+            //    .beginTransaction()
+            //    //.replace(R.id.fragment_container, signUpFragment)
+            //    .addSharedElement(
+            //    .addSharedElement(
+            //    .addSharedElement()
+            //    .addSharedElement()
+            //    .addToBackStack(null)
+            //    .commit()
+            val extras = FragmentNavigatorExtras(
+                view.findViewById<Button>(R.id.main_button) to "main_button",
+                view.findViewById<Button>(R.id.later_button) to "later_button",
+                view.findViewById<TextInputLayout>(R.id.username_layout) to "username_layout",
+                view.findViewById<TextInputLayout>(R.id.password_layout) to "password_layout"
+            )
+            view.findNavController().navigate(R.id.to_sign_up_screen, null, null, extras)
         }
 
         view.findViewById<TextView>(R.id.later_button).setOnClickListener {

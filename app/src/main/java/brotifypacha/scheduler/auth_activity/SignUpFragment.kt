@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 
 import brotifypacha.scheduler.R
 import com.google.android.material.textfield.TextInputEditText
@@ -42,8 +43,9 @@ class SignUpFragment : Fragment() {
         view.findViewById<TextView>(R.id.to_sign_in).setOnClickListener {
             viewModel.setUsername(usernameEdit.text.toString())
             viewModel.setPassword(passwordEdit.text.toString())
-            (this.activity as AuthActivity).onToSignInFragment()
+            view.findNavController().popBackStack()
         }
+
 
         usernameEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

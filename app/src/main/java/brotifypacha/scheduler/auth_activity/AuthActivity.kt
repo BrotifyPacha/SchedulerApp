@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import androidx.transition.*
 import androidx.transition.Fade.IN
 import androidx.transition.Fade.OUT
@@ -28,7 +29,8 @@ class AuthActivity : AppCompatActivity() {
 
         authViewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
 
-        //TODO: Н
+        //findNavController(R.id.nav_host_fragment).navigate()
+
     }
 
     fun onToSignUpFragment() {
@@ -52,7 +54,7 @@ class AuthActivity : AppCompatActivity() {
 
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.fragment_container, signUpFragment)
+            //.replace(R.id.fragment_container, signUpFragment)
             .addSharedElement(findViewById(R.id.main_button), "main_button")
             .addSharedElement(findViewById(R.id.later_button), "later_button")
             .addSharedElement(findViewById(R.id.username_layout), "username_layout")
