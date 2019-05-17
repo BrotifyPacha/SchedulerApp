@@ -1,4 +1,4 @@
-package brotifypacha.scheduler.schedule_list_activity
+package brotifypacha.scheduler.main_activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

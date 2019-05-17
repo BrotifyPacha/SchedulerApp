@@ -1,4 +1,4 @@
-package brotifypacha.scheduler.schedule_list_activity
+package brotifypacha.scheduler.main_activity
 
 import androidx.lifecycle.ViewModel
 
