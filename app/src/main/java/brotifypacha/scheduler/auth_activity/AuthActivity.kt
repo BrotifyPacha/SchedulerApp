@@ -3,58 +3,116 @@ package brotifypacha.scheduler.auth_activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
 import androidx.transition.*
-import androidx.transition.Fade.IN
-import androidx.transition.Fade.OUT
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Constants
-import brotifypacha.scheduler.schedule_list_activity.ScheduleListActivity
+import brotifypacha.scheduler.main_activity.MainActivity
 
 class AuthActivity : AppCompatActivity() {
 
     val TAG = AuthActivity::class.java.simpleName
 
-    lateinit var authViewModel: AuthViewModel
-
+    lateinit var viewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_auth)
 
-        authViewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
-
-        //findNavController(R.id.nav_host_fragment).navigate()
-
+        if (isAtheticated()){
+            startMainActivity()
+        } else {
+            viewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
+            viewModel.getErrorEvent().observe(this, Observer {
+                if (it != null) {
+                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                    viewModel.setErrorShown()
+                }
+            })
+            viewModel.getEventAuthenticated().observe(this, Observer {
+                if (it != null) {
+                    getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                        .edit()
+                        .putBoolean(Constants.SP_IS_AUTHORIZED, true)
+                        .putString(Constants.KEY_TOKEN, it)
+                        .apply()
+                    if (isAtheticated()) {
+                        startMainActivity()
+                    }
+                    viewModel.setAuthenticationComplete()
+                }
+            })
+            if (supportFragmentManager.fragments.isEmpty()) {
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.fragment_container, SignInFragment.newInstance().apply {
+                        setExitTransition(TransitionSet().apply {
+                            addTransition(TransitionSet().apply {
+                                addTransition(ChangeBounds())
+                                addTransition(ChangeTransform())
+                                addTarget(R.id.title_sign_in)
+                                addTarget(R.id.title_sign_up)
+                            })
+                            addTransition(TransitionSet().apply {
+                                addTransition(Fade(Fade.MODE_OUT).apply {
+                                    addTarget(R.id.to_sign_up)
+                                    addTarget(R.id.title_sign_in)
+                                })
+                                addTransition(Fade(Fade.MODE_IN).apply {
+                                    addTarget(R.id.to_sign_in)
+                                    addTarget(R.id.title_sign_up)
+                                })
+                                setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
+                            })
+                            setOrdering(TransitionSet.ORDERING_TOGETHER)
+                        })
+                    })
+                    .commit()
+            }
+        }
     }
 
     fun onToSignUpFragment() {
         val signUpFragment = SignUpFragment.newInstance().apply {
-            setEnterTransition(Fade().apply {
-                addTarget(R.id.to_sign_in)
-                addTarget(R.id.to_sign_up)
-            })
             val shared_transition = TransitionSet().apply {
-                addTransition(ChangeBounds().apply { setDuration(100) })
+                setDuration(200)
+                addTransition(Fade(Fade.MODE_OUT))
+                addTransition(ChangeBounds())
+                addTransition(ChangeTransform())
                 setOrdering(TransitionSet.ORDERING_TOGETHER)
             }
             setSharedElementEnterTransition(shared_transition)
             setSharedElementReturnTransition(shared_transition)
 
-            setReturnTransition(Fade().apply {
-                addTarget(R.id.to_sign_in)
-                addTarget(R.id.to_sign_up)
+            setReturnTransition(TransitionSet().apply {
+                addTransition(TransitionSet().apply {
+                    addTransition(ChangeBounds())
+                    addTransition(ChangeTransform())
+                    addTarget(R.id.title_sign_in)
+                    addTarget(R.id.title_sign_up)
+                })
+                addTransition(TransitionSet().apply {
+                    addTransition(Fade(Fade.MODE_OUT).apply {
+                        addTarget(R.id.to_sign_in)
+                        addTarget(R.id.title_sign_up)
+                    })
+                    addTransition(Fade(Fade.MODE_IN).apply {
+                        addTarget(R.id.to_sign_up)
+                        addTarget(R.id.title_sign_in)
+                    })
+                    setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
+                })
+                setOrdering(TransitionSet.ORDERING_TOGETHER)
+
             })
         }
-
         supportFragmentManager
             .beginTransaction()
-            //.replace(R.id.fragment_container, signUpFragment)
+            .replace(R.id.fragment_container, signUpFragment)
             .addSharedElement(findViewById(R.id.main_button), "main_button")
             .addSharedElement(findViewById(R.id.later_button), "later_button")
             .addSharedElement(findViewById(R.id.username_layout), "username_layout")
@@ -72,6 +130,21 @@ class AuthActivity : AppCompatActivity() {
             .edit()
             .putBoolean(Constants.SP_IS_AUTHORIZED, false)
             .apply()
-        startActivity(Intent(this, ScheduleListActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
+    }
+
+    fun isAtheticated() : Boolean{
+        val pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+        if (pref.getBoolean(Constants.SP_IS_AUTHORIZED, false)){
+            if (pref.getString(Constants.KEY_TOKEN, null) != null) return true
+        }
+        return false
+    }
+    fun startMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        })
     }
 }

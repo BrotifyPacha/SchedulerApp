@@ -4,9 +4,9 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import brotifypacha.scheduler.R
 
-class ScheduleListActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
-    val TAG = ScheduleListActivity::class.java.simpleName
+    val TAG = MainActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

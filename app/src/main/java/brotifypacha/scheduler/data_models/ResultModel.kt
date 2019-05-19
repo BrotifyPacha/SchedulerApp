@@ -1,8 +1,8 @@
 package brotifypacha.scheduler.data_models
 
-data class ResultModel (
+data class ResultModel<T> (
     val result: String,
-    val data: List<Any>,
+    val data: T,
     val type: String,
     val field: String,
     val description: String

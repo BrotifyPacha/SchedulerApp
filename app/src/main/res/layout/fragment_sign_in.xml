@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/fragment_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:transitionName="fragment_root"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:gravity="center_horizontal"
         tools:context=".auth_activity.SignInFragment">
+
+    <TextView
+            android:id="@+id/title_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:transitionName="title"
+            android:text="Вход"
+            android:textAppearance="@style/AppTheme.Display1"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp"/>
 
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:transitionName="username_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/title_sign_in"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/username_edit"
@@ -34,51 +40,65 @@
 
     <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:transitionName="password_layout">
+            app:passwordToggleEnabled="true"
+            android:transitionName="password_layout"
+            app:layout_constraintTop_toBottomOf="@id/username_layout" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp">
 
         <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textPassword"
                 android:hint="@string/password_hint"
                 android:lines="1"
                 android:singleLine="true"/>
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-            android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+            android:id="@+id/main_button"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:weightSum="2"
-            android:orientation="horizontal">
+            android:enabled="false"
+            android:text="@string/auth_sign_in"
+            android:transitionName="main_button"
+            android:layout_weight="1"
+            app:layout_constraintTop_toBottomOf="@id/password_layout"
+            app:layout_constraintStart_toStartOf="@+id/title_sign_in"
+            app:layout_constraintEnd_toStartOf="@+id/guideline4" android:layout_marginTop="8dp"/>
 
-        <Button
-                android:id="@+id/main_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="@string/auth_sign_in"
-                android:transitionName="main_button"
-                android:layout_weight="1"/>
-
-        <Button
-                android:id="@+id/later_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/auth_later"
-                android:transitionName="later_button"
-                android:layout_weight="1"/>
-
-    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+            style="@style/AppTheme.Widget.ButtonSecondary"
+            android:id="@+id/later_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/auth_later"
+            android:transitionName="later_button"
+            android:layout_weight="1"
+            app:layout_constraintBaseline_toBaselineOf="@+id/main_button"
+            app:layout_constraintEnd_toEndOf="@+id/title_sign_in"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"/>
 
     <TextView
             android:id="@+id/to_sign_up"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:text="@string/auth_sign_up_option"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/main_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
-</LinearLayout>
+    <androidx.constraintlayout.widget.Guideline
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/guideline4"
+            app:layout_constraintGuide_percent="0.5"
+            android:orientation="vertical"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

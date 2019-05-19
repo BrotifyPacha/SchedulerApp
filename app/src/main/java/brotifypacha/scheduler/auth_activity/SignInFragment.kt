@@ -1,8 +1,7 @@
 package brotifypacha.scheduler.auth_activity
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +10,14 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import brotifypacha.scheduler.Constants
 
 import brotifypacha.scheduler.R
+import brotifypacha.scheduler.afterTextChanged
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.fragment_sign_in.*
+import kotlinx.android.synthetic.main.fragment_sign_in.view.*
 
 class SignInFragment : Fragment() {
 
@@ -42,67 +43,36 @@ class SignInFragment : Fragment() {
         usernameLayout = view.findViewById(R.id.username_layout)
         passwordLayout = view.findViewById(R.id.password_layout)
 
+        usernameEdit.requestFocus()
+
         view.findViewById<TextView>(R.id.to_sign_up).setOnClickListener {
             viewModel.setUsername(usernameEdit.text.toString())
             viewModel.setPassword(passwordEdit.text.toString())
 
-            //val signUpFragment = SignUpFragment.newInstance().apply {
-            //    setEnterTransition(Fade().apply {
-            //        addTarget(R.id.to_sign_in)
-            //        addTarget(R.id.to_sign_up)
-            //    })
-            //    val shared_transition = TransitionSet().apply {
-            //        addTransition(ChangeBounds().apply { setDuration(100) })
-            //        setOrdering(TransitionSet.ORDERING_TOGETHER)
-            //    }
-            //    setSharedElementEnterTransition(shared_transition)
-            //    setSharedElementReturnTransition(shared_transition)
-
-            //    setReturnTransition(Fade().apply {
-            //        addTarget(R.id.to_sign_in)
-            //        addTarget(R.id.to_sign_up)
-            //    })
-            //}
-
-            //supportFragmentManager
-            //    .beginTransaction()
-            //    //.replace(R.id.fragment_container, signUpFragment)
-            //    .addSharedElement(
-            //    .addSharedElement(
-            //    .addSharedElement()
-            //    .addSharedElement()
-            //    .addToBackStack(null)
-            //    .commit()
-            val extras = FragmentNavigatorExtras(
-                view.findViewById<Button>(R.id.main_button) to "main_button",
-                view.findViewById<Button>(R.id.later_button) to "later_button",
-                view.findViewById<TextInputLayout>(R.id.username_layout) to "username_layout",
-                view.findViewById<TextInputLayout>(R.id.password_layout) to "password_layout"
-            )
-            view.findNavController().navigate(R.id.to_sign_up_screen, null, null, extras)
+            if (usernameEdit.hasFocus()){
+                viewModel.setFocusedField("username")
+            }
+            if (passwordEdit.hasFocus()){
+                viewModel.setFocusedField("password")
+            }
+            (activity as AuthActivity).onToSignUpFragment()
         }
 
         view.findViewById<TextView>(R.id.later_button).setOnClickListener {
-            (this.activity as AuthActivity).onLaterButtonClick()
+            (activity as AuthActivity).onLaterButtonClick()
         }
 
-        usernameEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-        passwordEdit.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
+        usernameEdit.afterTextChanged {
+            main_button.isEnabled = (viewModel.evaluateUsername(it) == Constants.SUCCESS) and (viewModel.evaluatePassword(passwordEdit.text.toString()) == Constants.SUCCESS)
+        }
+        passwordEdit.afterTextChanged {
+            main_button.isEnabled = (viewModel.evaluateUsername(usernameEdit.text.toString()) == Constants.SUCCESS) and (viewModel.evaluatePassword(it) == Constants.SUCCESS)
+        }
 
+        view.findViewById<Button>(R.id.main_button).main_button.setOnClickListener {
+            Log.d(TAG, "click is invoked")
+            viewModel.signIn(usernameEdit.text.toString(), passwordEdit.text.toString())
+        }
         return view
     }
 
@@ -112,12 +82,27 @@ class SignInFragment : Fragment() {
         viewModel.getUsername().observe(viewLifecycleOwner, Observer<String>{
             usernameLayout.isHintAnimationEnabled = false
             usernameEdit.setText(it)
+            usernameEdit.setSelection(it.length)
             usernameLayout.isHintAnimationEnabled = true
         })
         viewModel.getPassword().observe(viewLifecycleOwner, Observer<String>{
             passwordLayout.isHintAnimationEnabled = false
             passwordEdit.setText(it)
+            passwordEdit.setSelection(it.length)
             passwordLayout.isHintAnimationEnabled = true
+        })
+
+        viewModel.getFocusedField().observe(viewLifecycleOwner, Observer<String>{
+            when (it){
+                "username" -> {
+                    usernameEdit.requestFocus()
+                    usernameEdit.setSelection(usernameEdit.text.toString().length)
+                }
+                "password" -> {
+                    passwordEdit.requestFocus()
+                    passwordEdit.setSelection(passwordEdit.text.toString().length)
+                }
+            }
         })
     }
 }
