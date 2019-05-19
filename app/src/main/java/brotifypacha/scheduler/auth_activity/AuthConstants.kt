@@ -1,6 +1,6 @@
 package brotifypacha.scheduler.auth_activity
 
-class AuthContants {
+class AuthConstants {
 
     companion object {
         val MIN_USERNAME_LEN = 5

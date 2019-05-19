@@ -81,7 +81,7 @@ class AuthViewModel : ViewModel() {
      * @return 'success' - Если ошибок нет
      */
     fun evaluateUsername(username: String) : String{
-        if (username.length < AuthContants.MIN_USERNAME_LEN){
+        if (username.length < AuthConstants.MIN_USERNAME_LEN){
             return "error_1"
         } else if (!Pattern.compile("[a-z0-9_.\\-]+").matcher(username).matches()){
             return "error_2"
@@ -94,7 +94,7 @@ class AuthViewModel : ViewModel() {
     fun reactToUsername(result : String){
         when (result) {
             "error_1" -> {
-                setUsernameHelperMsg("Имя пользователя должно быть больше ${AuthContants.MIN_USERNAME_LEN} символов в длину")
+                setUsernameHelperMsg("Имя пользователя должно быть больше ${AuthConstants.MIN_USERNAME_LEN} символов в длину")
             }
             "error_2" -> {
                 setUsernameHelperMsg("В имени пользователя разрешены лишь сиволы a-z, 0-9 и _ . - ")
@@ -121,14 +121,14 @@ class AuthViewModel : ViewModel() {
      * @return 'success' - Если ошибок нет
      */
     fun evaluatePassword(password: String) : String {
-        if (password.length < AuthContants.MIN_PASSWORD_LEN)
+        if (password.length < AuthConstants.MIN_PASSWORD_LEN)
             return "error_1"
         return Constants.SUCCESS
     }
 
     fun reactToPassword(result: String){
         when (result){
-            "error_1" -> setPasswordHelperMsg("Пароль должен быть больше ${AuthContants.MIN_PASSWORD_LEN} символов в длину")
+            "error_1" -> setPasswordHelperMsg("Пароль должен быть больше ${AuthConstants.MIN_PASSWORD_LEN} символов в длину")
             Constants.SUCCESS -> setPasswordHelperMsg(null)
         }
     }
