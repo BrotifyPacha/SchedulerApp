@@ -23,57 +23,53 @@ class AuthActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_auth)
 
-        if (isAtheticated()){
-            startMainActivity()
-        } else {
-            viewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
-            viewModel.getErrorEvent().observe(this, Observer {
-                if (it != null) {
-                    Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-                    viewModel.setErrorShown()
-                }
-            })
-            viewModel.getEventAuthenticated().observe(this, Observer {
-                if (it != null) {
-                    getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                        .edit()
-                        .putBoolean(Constants.SP_IS_AUTHORIZED, true)
-                        .putString(Constants.KEY_TOKEN, it)
-                        .apply()
-                    if (isAtheticated()) {
-                        startMainActivity()
-                    }
-                    viewModel.setAuthenticationComplete()
-                }
-            })
-            if (supportFragmentManager.fragments.isEmpty()) {
-                supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.fragment_container, SignInFragment.newInstance().apply {
-                        setExitTransition(TransitionSet().apply {
-                            addTransition(TransitionSet().apply {
-                                addTransition(ChangeBounds())
-                                addTransition(ChangeTransform())
+        viewModel = ViewModelProviders.of(this).get(AuthViewModel::class.java)
+        viewModel.getErrorEvent().observe(this, Observer {
+            if (it != null) {
+                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                viewModel.setErrorShown()
+            }
+        })
+        viewModel.getEventAuthenticated().observe(this, Observer {
+            if (it != null) {
+                getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+                    .edit()
+                    .putBoolean(Constants.SP_IS_AUTHORIZED, true)
+                    .putString(Constants.KEY_TOKEN, it)
+                    .apply()
+                finish()
+                //startMainActivity()
+                viewModel.setAuthenticationComplete()
+            }
+        })
+        if (supportFragmentManager.fragments.isEmpty()) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, SignInFragment.newInstance().apply {
+                    setExitTransition(TransitionSet().apply {
+                        addTransition(TransitionSet().apply {
+                            addTransition(ChangeBounds())
+                            addTransition(ChangeTransform())
+                            addTarget(R.id.title_sign_in)
+                            addTarget(R.id.title_sign_up)
+                        })
+                        addTransition(TransitionSet().apply {
+                            addTransition(Fade(Fade.MODE_OUT).apply {
+                                addTarget(R.id.to_sign_up)
                                 addTarget(R.id.title_sign_in)
+                            })
+                            addTransition(Fade(Fade.MODE_IN).apply {
+                                addTarget(R.id.to_sign_in)
                                 addTarget(R.id.title_sign_up)
                             })
-                            addTransition(TransitionSet().apply {
-                                addTransition(Fade(Fade.MODE_OUT).apply {
-                                    addTarget(R.id.to_sign_up)
-                                    addTarget(R.id.title_sign_in)
-                                })
-                                addTransition(Fade(Fade.MODE_IN).apply {
-                                    addTarget(R.id.to_sign_in)
-                                    addTarget(R.id.title_sign_up)
-                                })
-                                setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
-                            })
-                            setOrdering(TransitionSet.ORDERING_TOGETHER)
+                            setOrdering(TransitionSet.ORDERING_SEQUENTIAL)
                         })
+                        setOrdering(TransitionSet.ORDERING_TOGETHER)
                     })
-                    .commit()
-            }
+                })
+                .commit()
         }
+
     }
 
     fun onToSignUpFragment() {
@@ -133,18 +129,9 @@ class AuthActivity : AppCompatActivity() {
         startActivity(Intent(this, MainActivity::class.java))
     }
 
-    fun isAtheticated() : Boolean{
-        val pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-        if (pref.getBoolean(Constants.SP_IS_AUTHORIZED, false)){
-            if (pref.getString(Constants.KEY_TOKEN, null) != null) return true
-        }
-        return false
+    override fun onBackPressed() {
+        finishAffinity()
+        //super.onBackPressed()
     }
-    fun startMainActivity() {
-        startActivity(Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        })
-    }
+
 }
