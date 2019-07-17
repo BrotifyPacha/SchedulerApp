@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <TextView
+            android:text=""
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/question_text"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            style="@style/AppTheme.Body2"
+            tools:text='Вы уверены что хотите удалить расписание "Название расписания"'
+    />
+
+    <Button
+            android:text="Positive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/positive_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/question_text"
+            style="@style/AppTheme.Widget.ButtonPrimary.Minimal"
+    />
+    <Button
+            android:text="Negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/negative_buttton"
+            app:layout_constraintEnd_toStartOf="@+id/positive_button"
+            android:layout_marginEnd="24dp" app:layout_constraintBaseline_toBaselineOf="@+id/positive_button"
+            style="@style/AppTheme.Widget.ButtonSecondary.Minimal"
+    />
+</androidx.constraintlayout.widget.ConstraintLayout>

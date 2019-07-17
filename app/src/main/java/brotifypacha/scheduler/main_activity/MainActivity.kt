@@ -1,13 +1,24 @@
 package brotifypacha.scheduler.main_activity
 
-import android.content.Context
-import android.content.Intent
+import android.content.*
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.NavOptions
+import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.R
+import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.auth_activity.AuthActivity
+import com.google.android.gms.ads.MobileAds
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,44 +26,46 @@ class MainActivity : AppCompatActivity() {
 
     val CODE_AUTH_ACTIVITY = 0
 
+    lateinit var viewModel: MainActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_schedule_list)
+        setContentView(R.layout.activity_main)
+
+        //Инициализация AdMob
+        MobileAds.initialize(this, Constants.ADMOB_APP_ID)
 
         //Проверка авторизованности пользователя
         val pref = getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-        if (!pref.getBoolean(Constants.SP_IS_AUTHORIZED, false) or !(pref.getString(Constants.KEY_TOKEN, null) != null)) {
+        if (!Utils.isAuthorized(pref)) {
             startActivityForResult(Intent(this, AuthActivity::class.java), CODE_AUTH_ACTIVITY)
         }
 
-        /*val retrofit  = Retrofit.Builder()
-            .baseUrl("http://178.219.153.30:5000")
-            .addConverterFactory(
-                GsonConverterFactory.create()
-            )
-            .build().create(SchedulerApiService::class.java)
-
-        val oof = retrofit.get_users(null, null, null, null).enqueue(object : Callback<ResultModel> {
-            /**
-             * Invoked when a network exception occurred talking to the server or when an unexpected
-             * exception occurred creating the request or processing the response.
-             */
-            override fun onFailure(call: Call<ResultModel>, t: Throwable) {
-                Log.d(TAG, t.toString())
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        viewModel.getUserData()
+        viewModel.getEventRequestAuth().observe(this, Observer {
+            if (it){
+                clearAuthorization(pref)
+                viewModel.setEventRequestAuthCaptured()
             }
-
-            /**
-             * Invoked for a received HTTP response.
-             *
-             *
-             * Note: An HTTP response may still indicate an application-level failure such as a 404 or 500.
-             * Call [Response.isSuccessful] to determine if the response indicates success.
-             */
-            override fun onResponse(call: Call<ResultModel>, response: Response<ResultModel>) {
-                val res = response.body()
-                    Log.d(TAG, res.toString())
+        })
+        viewModel.getEventError().observe(this, Observer {
+            if (it != null) {
+                when (it) {
+                    Constants.NETWORK_ERROR -> {}//Toast.makeText(this, "Нет доступа к сети", Toast.LENGTH_LONG).show()
+                }
+                viewModel.setEventErrorCaptured()
             }
-        })*/
+        })
+    }
+
+    fun clearAuthorization(pref: SharedPreferences){
+        Log.d(TAG, "supposed to happen")
+        pref.edit()
+            .remove(Constants.PREF_KEY_TOKEN)
+            .remove(Constants.PREF_KEY_ID)
+            .apply()
+        startActivityForResult(Intent(this, AuthActivity::class.java), CODE_AUTH_ACTIVITY)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

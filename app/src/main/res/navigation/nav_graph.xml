@@ -2,13 +2,50 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
-            app:startDestination="@id/signInFragment">
+            app:startDestination="@id/scheduleListFragment"
+>
 
-    <fragment android:id="@+id/signInFragment" android:name="brotifypacha.scheduler.auth_activity.SignInFragment"
-              android:label="fragment_sign_in" tools:layout="@layout/fragment_sign_in">
-        <action android:id="@+id/to_sign_up_screen"
-                app:destination="@id/signUpFragment"/>
+    <fragment android:id="@+id/scheduleListFragment"
+              android:name="brotifypacha.scheduler.schedules_list_fragment.ScheduleListFragment"
+              android:label="fragment_schedule_list"
+              tools:layout="@layout/fragment_schedule_list">
+        <action android:id="@+id/viewScheduleFromList"
+                app:destination="@id/viewScheduleFragment"
+                app:popUpTo="@+id/scheduleListFragment"
+        />
+        <action android:id="@+id/actionEditSchedule"
+                app:destination="@id/editScheduleFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action android:id="@+id/addChange"
+                app:destination="@id/addChangeDialogFragment" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
     </fragment>
-    <fragment android:id="@+id/signUpFragment" android:name="brotifypacha.scheduler.auth_activity.SignUpFragment"
-              android:label="fragment_sign_up" tools:layout="@layout/fragment_sign_up"/>
+    <fragment android:id="@+id/viewScheduleFragment"
+              android:name="brotifypacha.scheduler.view_schedule_fragment.ViewScheduleFragment"
+              android:label="fragment_view_schedule"
+              tools:layout="@layout/fragment_view_edit_schedule">
+        <argument android:name="scheduleId" app:argType="string"/>
+        <action android:id="@+id/actionEditSchedule"
+                app:destination="@id/editScheduleFragment"
+                app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim"
+                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action android:id="@+id/addChange"
+                app:destination="@id/addChangeDialogFragment" app:enterAnim="@anim/nav_default_enter_anim"
+                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+    </fragment>
+    <fragment android:id="@+id/editScheduleFragment"
+              android:name="brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment"
+              android:label="edit_schedule_fragment" tools:layout="@layout/fragment_view_edit_schedule">
+        <argument android:name="scheduleId" app:argType="string"/>
+    </fragment>
+    <fragment android:id="@+id/addChangeDialogFragment"
+              android:name="brotifypacha.scheduler.add_change_fragment.AddChangeFragment"
+              android:label="AddChangeDialogFragment"/>
 </navigation>

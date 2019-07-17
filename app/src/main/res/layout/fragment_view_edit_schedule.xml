@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="title" type="String"/>
+    </data>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout android:layout_width="match_parent"
+                                                           android:layout_height="match_parent"
+                                                           android:fitsSystemWindows="true">
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".view_schedule_fragment.ViewScheduleFragment" android:overScrollMode="always"
+                android:isScrollContainer="true">
+
+            <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:orientation="vertical"
+                    android:fillViewport="true"
+                    app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toTopOf="@+id/tabLayout">
+                <LinearLayout
+                        android:id="@+id/title_ad_container"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.gms.ads.AdView
+                            xmlns:ads="http://schemas.android.com/apk/res-auto"
+                            android:id="@+id/adView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            ads:adSize="BANNER"
+                            ads:adUnitId="ca-app-pub-4572037752382250/5160073242"/>
+                    <FrameLayout
+                            android:id="@+id/ad_view_placeholder"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:animateLayoutChanges="true"
+                    />
+
+                    <include
+                            android:id="@+id/include"
+                            layout="@layout/header"
+                            app:title="@{title}"
+                            android:layout_width="match_parent" android:layout_height="wrap_content"/>
+                    <androidx.viewpager.widget.ViewPager
+                            android:id="@+id/viewPager"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                    />
+                </LinearLayout>
+            </ScrollView>
+
+            <com.google.android.material.bottomappbar.BottomAppBar
+                    android:id="@+id/appbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+            <com.google.android.material.tabs.TabLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:tabIndicatorGravity="top"
+                    app:tabTextColor="@color/primaryTextColor"
+                    app:tabSelectedTextColor="@color/primaryColor"
+                    app:layout_constraintBottom_toTopOf="@+id/appbar" android:id="@+id/tabLayout">
+                <com.google.android.material.tabs.TabItem
+                        android:text="Пн"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Вт"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Ср"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Чт"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Пт"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Сб"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                <com.google.android.material.tabs.TabItem
+                        android:text="Вс"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+            </com.google.android.material.tabs.TabLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

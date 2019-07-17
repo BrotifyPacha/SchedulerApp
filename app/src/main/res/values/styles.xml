@@ -1,45 +1,121 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
         <item name="materialButtonStyle">@style/AppTheme.Widget.ButtonPrimary</item>
         <item name="textInputStyle">@style/AppTheme.Widget.TextInput</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+
+        <!-- Setting status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="23">@color/secondaryColor</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
 
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryDark">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryDarkColor</item>
     </style>
+
     <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+    </style>
+    <style name="AppTheme.NoActionBarFullScreen" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
+
+    <style name="AppTheme.Widget.EditText" parent="Widget.AppCompat.EditText">
+        <item name="android:inputType">textNoSuggestions</item>
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="android:maxLines">5</item>
+        <item name="android:scrollHorizontally">false</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@null</item>
+    </style>
+    
+    <style name="AppTheme.DatePickerDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:textColorPrimary">@color/primaryTextColor</item>
+        <item name="colorAccent">@color/primaryColor</item>
+    </style>
+    <style name="AppTheme.DatePickerDialog.Background">
+        <item name="android:background">@color/secondaryColor</item>
+        <item name="android:textColor">@color/primaryColor</item>
+    </style>
+    
     <style name="AppTheme.Widget.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
     </style>
+
+
+    <!-- Стили кнопок -->
+    <style name="AppTheme.Widget.ButtonSecondary.Minimal" parent="AppTheme.Widget.ButtonPrimary.Minimal">
+        <item name="rippleColor">@color/secondaryDarkColor</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+    </style>
+    <style name="AppTheme.Widget.ButtonPrimary.Minimal" parent="Widget.MaterialComponents.Button.UnelevatedButton">
+        <item name="android:textAllCaps">false</item>
+        <item name="rippleColor">@color/primaryColor</item>
+        <item name="android:background">@color/secondaryColor</item>
+        <item name="android:backgroundTint" tools:targetApi="lollipop">@color/secondaryColor</item>
+        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="AppTheme.Widget.ButtonPrimary" parent="Widget.MaterialComponents.Button">
         <item name="android:textColor">@color/secondaryColor</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:background">@drawable/primary_button_background</item>
     </style>
+
     <style name="AppTheme.Widget.ButtonSecondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/primaryTextColor</item>
         <item name="android:backgroundTint" tools:targetApi="lollipop">@color/secondaryColor</item>
     </style>
+    <style name="AppTheme.Widget.ExtendedFAB" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="android:textColor">@color/secondaryColor</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="rippleColor">@color/secondaryDarkColor</item>
+        <item name="android:backgroundTint" tools:targetApi="lollipop">@color/primaryColor</item>
+    </style>
 
-    <style name="AppTheme.Body1" parent="TextAppearance.AppCompat.Body1"/>
-    <style name="AppTheme.Body2" parent="TextAppearance.AppCompat.Body2"/>
+    <!-- Стили текстов -->
+    <style name="AppTheme.TextAppearance">
+        <item name="android:textAllCaps">false</item>
+    </style>
+    <style name="AppTheme.Body1" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="AppTheme.Body2" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+    <style name="AppTheme.Body3" parent="TextAppearance.AppCompat.Body2">
+        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
     <style name="AppTheme.Display1" parent="TextAppearance.AppCompat.Display1">
         <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:fontFamily">sans-serif</item>
     </style>
     <style name="AppTheme.Display2" parent="TextAppearance.AppCompat.Display2">
         <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
     <style name="AppTheme.Display3" parent="TextAppearance.AppCompat.Display3">
         <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
     <style name="AppTheme.Display4" parent="TextAppearance.AppCompat.Display4">
         <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 </resources>

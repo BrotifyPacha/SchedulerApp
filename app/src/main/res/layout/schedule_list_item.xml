@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" android:orientation="vertical" >
+
+    <data>
+        <variable
+                name="schedule"
+                type="brotifypacha.scheduler.database.Schedule"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+    >
+        <TextView
+                style="@style/TextAppearance.AppCompat.Body1"
+                android:id="@+id/schedule_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="@{schedule.name}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="16dp"
+                tools:text="Название расписания" android:layout_marginTop="8dp"/>
+        <LinearLayout
+                android:id="@+id/alias_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/schedule_name">
+            <TextView
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:id="@+id/at_symbol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:textSize="16sp"
+                    android:text="\@"
+                    app:layout_constraintTop_toBottomOf="@id/schedule_name"
+                    app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginBottom="8dp"/>
+            <TextView
+                    style="@style/TextAppearance.MaterialComponents.Caption"
+                    android:id="@+id/schedule_alias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@id/at_symbol"
+                    android:text="@{schedule.alias}"
+                    tools:text="alias" app:layout_constraintBaseline_toBaselineOf="@+id/at_symbol"/>
+        </LinearLayout>
+
+        <include
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                layout="@layout/divider"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

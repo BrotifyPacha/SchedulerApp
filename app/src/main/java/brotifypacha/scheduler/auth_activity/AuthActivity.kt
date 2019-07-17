@@ -1,16 +1,17 @@
 package brotifypacha.scheduler.auth_activity
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.WindowDecorActionBar
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.transition.*
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Constants
-import brotifypacha.scheduler.main_activity.MainActivity
+import kotlinx.android.synthetic.main.activity_auth.*
 
 class AuthActivity : AppCompatActivity() {
 
@@ -32,14 +33,9 @@ class AuthActivity : AppCompatActivity() {
         })
         viewModel.getEventAuthenticated().observe(this, Observer {
             if (it != null) {
-                getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-                    .edit()
-                    .putBoolean(Constants.SP_IS_AUTHORIZED, true)
-                    .putString(Constants.KEY_TOKEN, it)
-                    .apply()
+                Log.d(TAG, "supposed to finish")
                 finish()
-                //startMainActivity()
-                viewModel.setAuthenticationComplete()
+                viewModel.setAuthenticationEventHandled()
             }
         })
         if (supportFragmentManager.fragments.isEmpty()) {
@@ -122,11 +118,8 @@ class AuthActivity : AppCompatActivity() {
     }
 
     fun onLaterButtonClick() {
-        getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(Constants.SP_IS_AUTHORIZED, false)
-            .apply()
-        startActivity(Intent(this, MainActivity::class.java))
+        viewModel.setAuthorizationVariables(Constants.PREF_VALUE_OFFLINE, Constants.PREF_VALUE_OFFLINE)
+        finish()
     }
 
     override fun onBackPressed() {
