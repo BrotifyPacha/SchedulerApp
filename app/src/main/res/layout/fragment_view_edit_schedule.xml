@@ -29,20 +29,6 @@
                         android:animateLayoutChanges="true"
                         app:layout_constraintTop_toTopOf="parent">
 
-                    <com.google.android.gms.ads.AdView
-                            xmlns:ads="http://schemas.android.com/apk/res-auto"
-                            android:id="@+id/adView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            ads:adSize="BANNER"
-                            ads:adUnitId="ca-app-pub-4572037752382250/5160073242"/>
-                    <FrameLayout
-                            android:id="@+id/ad_view_placeholder"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:animateLayoutChanges="true"
-                    />
-
                     <include
                             android:id="@+id/include"
                             layout="@layout/header"
@@ -64,7 +50,8 @@
                     android:layout_gravity="bottom"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="BottomAppBar" />
 
             <com.google.android.material.tabs.TabLayout
                     android:layout_width="match_parent"

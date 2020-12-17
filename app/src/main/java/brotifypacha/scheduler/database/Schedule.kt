@@ -14,11 +14,7 @@ import org.json.JSONObject
 data class Schedule(
     @PrimaryKey
     val _id : String,
-    val alias : String,
     val name : String,
-    val creator : String,
-    @ColumnInfo(name = "subscribed_users")
-    val subscribedUsers : String,
     @ColumnInfo(name = "first_day")
     val firstDay : Long,
     val schedule: String,
@@ -33,10 +29,7 @@ data class Schedule(
             }
             return Schedule(
                 model._id,
-                model.alias,
                 model.name,
-                model.creator,
-                listToStr(subscribedUsersIds),
                 model.first_day,
                 scheduleToStr(model.schedule),
                 changesToStr(model.changes)

@@ -48,11 +48,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0-alpha06'
 
     //admob
-    implementation 'com.google.android.gms:play-services-ads:17.2.1'
+    //implementation 'com.google.android.gms:play-services-ads:17.2.1'
 
     //firebase
-    implementation 'com.google.firebase:firebase-messaging:18.0.0'
-    implementation 'com.google.firebase:firebase-core:16.0.9'
+    //implementation 'com.google.firebase:firebase-messaging:18.0.0'
+    //implementation 'com.google.firebase:firebase-core:16.0.9'
 
     def nav_version = "2.1.0-alpha05"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version" // For Java use navigation-fragment
@@ -83,5 +83,5 @@ dependencies {
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
-    apply plugin: 'com.google.gms.google-services'
+    //apply plugin: 'com.google.gms.google-services'
 }

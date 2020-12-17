@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders
 import brotifypacha.scheduler.AnimUtils.Companion.animateViewWiggle
 import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.R;
+import brotifypacha.scheduler.data_models.ResultModel
 import brotifypacha.scheduler.databinding.FragmentCreateScheduleModalBinding
 import brotifypacha.scheduler.edit_schedule_fragment.EditScheduleViewModel
 import brotifypacha.scheduler.schedules_list_fragment.ScheduleListViewModel
@@ -40,23 +41,19 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
 
     companion object {
 
+        //TODO GOTTA REFACTOR THIS CLASS!
         val FRAGMENT_TAG = "create_schedule_modal"
-        val ARG_AUTH_WITH_TOKEN = "auth_with_token"
         val ARG_MODE = "mode"
         val ARG_NAME = "name"
-        val ARG_ALIAS = "alias"
         val MODE_CREATE = 0
         val MODE_EDIT = 1
 
-        fun newInstance(authWithToken: Boolean, mode: Int, name: String?, alias: String?): ManageScheduleDataModal =
+        fun newInstance(mode: Int, name: String?): ManageScheduleDataModal =
             ManageScheduleDataModal().apply {
                 arguments  = Bundle().apply {
-                    putBoolean(ARG_AUTH_WITH_TOKEN, authWithToken)
                     putInt(ARG_MODE, mode)
                     if (mode == MODE_EDIT){
                         putString(ARG_NAME, name)
-                        putString(ARG_ALIAS, alias)
-
                     }
                 }
             }
@@ -67,7 +64,6 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        val authWithToken = arguments!!.getBoolean(ARG_AUTH_WITH_TOKEN, false)
         mode = arguments!!.getInt(
             ARG_MODE,
             MODE_CREATE
@@ -79,36 +75,24 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
         when (mode){
             MODE_CREATE -> {
                 parentViewModel = ViewModelProviders.of(parentFragment!!).get(ScheduleListViewModel::class.java)
-                binding.nextButton.text = "Далее"
             }
             else -> {
                 parentViewModel = ViewModelProviders.of(parentFragment!!).get(EditScheduleViewModel::class.java)
-                binding.nextButton.text = "Готово"
                 binding.nameEdit.setText(arguments!!.getString(ARG_NAME))
-                binding.aliasEdit.setText(arguments!!.getString(ARG_ALIAS))
             }
         }
 
-
-        if (!authWithToken) {
-            binding.aliasEditLayout.visibility = View.GONE
-        }
         binding.nameEdit.requestFocus()
         (binding.root).setBackgroundColor(Color.TRANSPARENT)
 
         binding.nextButton.setOnClickListener {
             if (mListener != null){
-                if (evaluateName().equals("cool") && evaluateAlias().equals("cool")){
-                    val alias =  binding.aliasEdit.text.toString()
+                if (evaluateName()){
                     val name =  binding.nameEdit.text.toString()
                     if (mode == MODE_CREATE) {
-                        (parentViewModel as ScheduleListViewModel).createNewSchedule(name, alias)
-                    } else {
-                        (parentViewModel as EditScheduleViewModel).verifyAlias(alias)
+                        (parentViewModel as ScheduleListViewModel).createNewSchedule(name)
                     }
                 }
-                reactToNameError(evaluateName())
-                reactToAliasError(evaluateAlias())
             }
         }
         binding.cancelButton.setOnClickListener {
@@ -124,30 +108,12 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
             val parentViewModel = ViewModelProviders.of(parentFragment!!).get(ScheduleListViewModel::class.java)
             parentViewModel.createNewScheduleResponseLiveData.observe(viewLifecycleOwner, Observer {
                 if (it != null) {
-                    if (it.result == Constants.SUCCESS) {
+                    if (it.result == ResultModel.CODE_SUCCESS) {
                         if (mListener != null) {
-                            (mListener as Listener).onNextButtonClick(
-                                binding.nameEdit.text.toString(),
-                                binding.aliasEdit.text.toString()
-                            )
+                            (mListener as Listener).onNextButtonClick(binding.nameEdit.text.toString())
                         }
-                    } else {
-                        when (it.type){
-                            "field" -> {
-                                if (it.field == "name"){
-                                    reactToNameError(it.description)
-                                } else {
-                                    reactToAliasError(it.description)
-                                }
-                                return@Observer
-                            }
-                            Constants.NETWORK_ERROR -> {
-                                Toast.makeText(context, "Для создания нового расписания необходим доступ к сети", Toast.LENGTH_LONG).show()
-                                dismiss()
-                            }
-                        }
+                        parentViewModel.createNewScheduleResponseLiveData.value = null
                     }
-                    parentViewModel.createNewScheduleResponseLiveData.value = null
                 }
             })
         } else {
@@ -155,21 +121,13 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
             parentViewModel.getEventAliasVerified().observe(viewLifecycleOwner, Observer {
                 if (it != null){
                     when (it.result){
-                        Constants.SUCCESS -> {
+                        ResultModel.CODE_SUCCESS -> {
                             if (mListener != null){
                                 (mListener as Listener).onNextButtonClick(
-                                    binding.nameEdit.text.toString(),
-                                    binding.aliasEdit.text.toString()
+                                    binding.nameEdit.text.toString()
                                 )
                                 dismiss()
                             }
-                        }
-                        Constants.ERROR -> {
-                            reactToAliasError("error_4")
-                        }
-                        Constants.NETWORK_ERROR -> {
-                            Toast.makeText(context, "Для изменения этих полей требуется доступ к сети", Toast.LENGTH_LONG).show()
-                            Log.e(TAG, "network error smh")
                         }
                     }
                     parentViewModel.setEventAliasVerifiedHandled()
@@ -177,66 +135,21 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
             })
         }
     }
-
     override fun onDetach() {
         mListener = null
         super.onDetach()
     }
 
-    class Listener(val listener: (name: String, alias: String) -> Unit) {
-        fun onNextButtonClick(name: String, alias: String) = listener(name, alias)
+    class Listener(val listener: (name: String) -> Unit) {
+        fun onNextButtonClick(name: String) = listener(name)
     }
-    fun setOnNextButtonClickListener(listener: (name: String, alias: String) -> Unit){
+    fun setOnNextButtonClickListener(listener: (name: String) -> Unit){
         mListener = Listener(listener)
     }
 
-
-    fun evaluateName() : String {
-        if (binding.nameEdit.text.length < 3) return "error_1"
-        return "cool"
-    }
-    fun evaluateAlias() : String {
-        val alias = binding.aliasEdit.text
-        if (alias.length < 3 && alias.length > 0) return "error_1"
-
-        val secondRuleBroken = Pattern.compile("[^A-Za-z0-9_.-]+")
-            .matcher(binding.aliasEdit.text.toString())
-            .matches()
-        if (secondRuleBroken) return "error_2"
-        val thirdRuleBroken = Pattern.compile("(.*\\.\\..*|.*--.*|.*__.*)")
-            .matcher(binding.aliasEdit.text.toString())
-            .matches()
-        if (thirdRuleBroken) return "error_3"
-        else return "cool"
-    }
-
-    fun reactToNameError(error: String){
-        if (error.equals("error_1")){
-            animateViewWiggle(binding.nameEditLayout)
-        } else {
-            binding.nameHelperText.text = "*обязательно к заполнению"
-        }
-    }
-    fun reactToAliasError(error: String){
-        if (!error.equals("cool")){
-            when (error) {
-                "error_1" -> {
-                    binding.aliasHelperText.text = "При заполнении, поле должно иметь больше двух символов"
-                }
-                "error_2" -> {
-                    binding.aliasHelperText.text = "Может состоять лишь из следующих символов A-z, 0-9, _ . -"
-                }
-                "error_3" -> {
-                    binding.aliasHelperText.text = "Нельзя иметь более одной . - или _ подряд"
-                }
-                "error_4" -> {
-                    binding.aliasHelperText.text = "Этот идентификатор уже занят"
-                }
-            }
-            animateViewWiggle(binding.aliasEditLayout)
-        } else {
-            binding.aliasHelperText.text = "Оставьте пустым для автозаполнения"
-        }
+    fun evaluateName() : Boolean {
+        if (binding.nameEdit.text.length < 3) return false
+        return true
     }
 
 

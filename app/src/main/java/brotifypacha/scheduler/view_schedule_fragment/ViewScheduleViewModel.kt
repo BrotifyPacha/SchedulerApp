@@ -70,10 +70,10 @@ class ViewScheduleViewModel(val id: String, val app: Application) : AndroidViewM
         return onWeekSelectedEvent
     }
 
-    data class MenuClickedEventData(val scheduleId: String, val isUserCreator: Boolean)
+    data class MenuClickedEventData(val scheduleId: String)
 
     fun onMenuClickEvent(){
-        onMenuClickEvent.value = MenuClickedEventData(id, BaseRepository(app).getIsScheduleOwner(id))
+        onMenuClickEvent.value = MenuClickedEventData(id)
     }
     fun getOnMenuClickEvent() : LiveData<MenuClickedEventData>{
         return onMenuClickEvent
@@ -160,6 +160,7 @@ class ViewScheduleViewModel(val id: String, val app: Application) : AndroidViewM
     }
 
     fun deleteSchedule(scheduleId: String) {
+        repository.deleteSchedule(scheduleId)
     }
 
 }

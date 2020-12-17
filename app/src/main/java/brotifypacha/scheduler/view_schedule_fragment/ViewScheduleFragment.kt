@@ -42,10 +42,7 @@ class ViewScheduleFragment : Fragment() {
     private lateinit var viewModel: ViewScheduleViewModel
     private lateinit var bind: FragmentViewEditScheduleBinding
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         setHasOptionsMenu(true)
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_view_edit_schedule, container, false)
         (activity!! as AppCompatActivity).setSupportActionBar(bind.appbar)
@@ -57,10 +54,9 @@ class ViewScheduleFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        val refresh = menu.add(0, 0, 0, "Обновить")
+        val refresh = menu.add(0, 0, 0, "Выбрать текущий день")
         refresh.setIcon(R.drawable.ic_refresh_black_24dp)
         refresh.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        refresh.setVisible(Utils.isAuthorized(context!!.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)))
 
         val menuItem = menu.add(0, 1, 1, "Меню")
         menuItem.setIcon(R.drawable.ic_more_vert_black_24dp)
@@ -102,7 +98,6 @@ class ViewScheduleFragment : Fragment() {
         viewModel = ViewModelProviders.of(this, ViewScheduleViewModel.Factory(id, activity!!.application)).get(ViewScheduleViewModel::class.java)
         activityViewModel = ViewModelProviders.of(activity!!).get(MainActivityViewModel::class.java)
 
-        bind.adView.visibility = View.GONE
         bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
 
         viewModel.getErrorEvent().observe(viewLifecycleOwner, Observer {
@@ -117,8 +112,6 @@ class ViewScheduleFragment : Fragment() {
                 viewModel.setRefreshedEventHandled()
                 (bind.root as SwipeRefreshLayout).isRefreshing = false
                 (bind.root as SwipeRefreshLayout).isEnabled = false
-
-                Log.d(TAG, "refreshed event")
             }
         })
 
@@ -134,74 +127,48 @@ class ViewScheduleFragment : Fragment() {
         })
         viewModel.getOnMenuClickEvent().observe(viewLifecycleOwner, Observer { data ->
             if (data != null){
-                if (data.isUserCreator){
-                    val bottomDialog = ContextMenuModal.newInstance(
+                val bottomDialog = ContextMenuModal.newInstance(
                         listOf(
-                            ContextMenuModal.ModalMenuItem(0, "Удалить", R.drawable.ic_outline_delete_24px ),
-                            ContextMenuModal.ModalMenuItem(1, "Изменение на дату", R.drawable.ic_outline_event_24px),
-                            ContextMenuModal.ModalMenuItem(2, "Редактировать", R.drawable.ic_outline_edit_24px )
+                                ContextMenuModal.ModalMenuItem(0, "Удалить", R.drawable.ic_outline_delete_24px ),
+                                ContextMenuModal.ModalMenuItem(1, "Изменение на дату", R.drawable.ic_outline_event_24px),
+                                ContextMenuModal.ModalMenuItem(2, "Редактировать", R.drawable.ic_outline_edit_24px )
                         )
-                    )
-                    bottomDialog.setOnItemClickListener {menuItemId ->
-                        when (menuItemId){
-                            0 -> {
-                                bottomDialog.dismiss()
-                                val scheduleName = viewModel.getSchedule(data.scheduleId).name
-                                Log.d(TAG, scheduleName)
-                                val confirmationModal = ConfirmationModal.newInstance(
+                )
+                bottomDialog.setOnItemClickListener {menuItemId ->
+                    when (menuItemId){
+                        0 -> {
+                            bottomDialog.dismiss()
+                            val scheduleName = viewModel.getSchedule(data.scheduleId).name
+                            Log.d(TAG, scheduleName)
+                            val confirmationModal = ConfirmationModal.newInstance(
                                     "Вы уверены что хотите удалить расписание \"$scheduleName\"",
                                     "Удалить",
                                     "Отмена")
-                                confirmationModal.setOnItemClickListener(
+                            confirmationModal.setOnItemClickListener(
                                     positive = {
                                         viewModel.deleteSchedule(data.scheduleId)
+                                        findNavController().popBackStack()
                                         confirmationModal.dismiss()
                                     }, negative = {
-                                        confirmationModal.dismiss()
-                                    })
-                                confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
-                            }
-                            1 -> {
-                                findNavController().navigate(R.id.addChange, Bundle().apply {
-                                    putString(AddChangeFragment.ARG_SCHEDULE_ID, data.scheduleId)
-                                })
-                                bottomDialog.dismiss()
-                            }
-                            2 -> {
-
-                                this.findNavController().navigate(R.id.editScheduleFragment, Bundle().apply {
-                                    putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
-                                })
-                                bottomDialog.dismiss()
-                            }
-                        }
-                    }
-                    bottomDialog.show(childFragmentManager, "context_menu")
-                } else {
-                    val bottomDialog = ContextMenuModal.newInstance(
-                        listOf(
-                            ContextMenuModal.ModalMenuItem(0, "Отписаться", R.drawable.ic_outline_delete_24px )
-                        )
-                    )
-                    bottomDialog.setOnItemClickListener {menuItemId ->
-                        bottomDialog.dismiss()
-                        val scheduleName = viewModel.getSchedule(data.scheduleId).name
-                        Log.d(TAG, scheduleName)
-                        val confirmationModal = ConfirmationModal.newInstance(
-                            "Вы уверены что хотите удалить расписание \"$scheduleName\"",
-                            "Удалить",
-                            "Отмена")
-                        confirmationModal.setOnItemClickListener(
-                            positive = {
-                                viewModel.deleteSchedule(data.scheduleId)
-                                confirmationModal.dismiss()
-                            }, negative = {
                                 confirmationModal.dismiss()
                             })
-                        confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
+                            confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
+                        }
+                        1 -> {
+                            findNavController().navigate(R.id.addChange, Bundle().apply {
+                                putString(AddChangeFragment.ARG_SCHEDULE_ID, data.scheduleId)
+                            })
+                            bottomDialog.dismiss()
+                        }
+                        2 -> {
+                            this.findNavController().navigate(R.id.editScheduleFragment, Bundle().apply {
+                                putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
+                            })
+                            bottomDialog.dismiss()
+                        }
                     }
-                    bottomDialog.show(childFragmentManager, "context_menu")
                 }
+                bottomDialog.show(childFragmentManager, "context_menu")
                 viewModel.setOnMenuClickEventHandled()
             }
         })

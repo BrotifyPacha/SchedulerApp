@@ -40,15 +40,10 @@ abstract class SchedulesDao{
     @Query("SELECT * FROM schedules_table WHERE _id = :id")
     abstract fun getSchedule(id: String) : Schedule
 
-    @Ignore
-    fun getSubscribedSchedulesOfUser(id: String) : LiveData<List<Schedule>> {
-        Log.d(TAG, "querying schedules user is subscribed to")
-        return _getSubscribedSchedulesOfUser("%"+id+"%")
-    }
+    @Query("SELECT * FROM schedules_table")
+    abstract fun getSchedulesLiveData() : LiveData<List<Schedule>>
 
-    @Query("SELECT * FROM schedules_table WHERE subscribed_users LIKE :id")
-    abstract fun _getSubscribedSchedulesOfUser(id: String) : LiveData<List<Schedule>>
-
-
+    @Query("SELECT * FROM schedules_table")
+    abstract fun getSchedules() : List<Schedule>
 
 }

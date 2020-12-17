@@ -1,16 +1,10 @@
 package brotifypacha.scheduler.schedules_list_fragment
 
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.*
 import brotifypacha.scheduler.BaseRepository
-import brotifypacha.scheduler.Constants
-import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.data_models.ResultModel
 import brotifypacha.scheduler.database.Schedule
-import kotlinx.coroutines.launch
 
 class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app) {
 
@@ -25,28 +19,20 @@ class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app
     private val eventScheduleLongClicked = MutableLiveData<ScheduleLongClickEventData>()
     val createNewScheduleResponseLiveData = MutableLiveData<ResultModel<Unit>>()
     private lateinit var query : LiveData<List<Schedule>>
-    private var pref : SharedPreferences
 
     private val errorEvent = MutableLiveData<String>()
 
-    data class ScheduleLongClickEventData(val scheduleId: String, val isCreator: Boolean)
+    data class ScheduleLongClickEventData(val scheduleId: String)
 
 
     init {
         repository = ScheduleListRepository(app, viewModelScope, errorEvent)
-        pref = app.getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
-
         refreshScheduleList()
     }
 
     fun refreshScheduleList(){
-        viewModelScope.launch {
-            if (Utils.isAuthorizedWithToken(pref)){
-                repository.downloadSchedulesOfUser()
-            }
-        }
         if (::query.isInitialized) scheduleList.removeSource(query)
-        query = repository.getSchedulesOfUser()
+        query = repository.getSchedules()
         scheduleList.addSource(query, {
             scheduleList.value = it
         })
@@ -93,28 +79,27 @@ class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app
     }
 
     fun onScheduleLongClick(id: String) {
-        eventScheduleLongClicked.value = ScheduleLongClickEventData(id, BaseRepository(app).getIsScheduleOwner(id))
+        eventScheduleLongClicked.value = ScheduleLongClickEventData(id)
     }
 
     fun setScheduleLongClickEventHandled(){
         eventScheduleLongClicked.value = null
     }
 
-    data class CreateNewScheduleData(val clicked: Boolean, val authorizedWithToken: Boolean)
+    data class CreateNewScheduleData(val clicked: Boolean)
 
     fun getCreateNewScheduleEvent() : LiveData<CreateNewScheduleData>{
         return eventCreateNewScheduleClicked
     }
     fun onCreateNewScheduleClick() {
-        Log.d(TAG, "doing something")
-        eventCreateNewScheduleClicked.value = CreateNewScheduleData(true, Utils.isAuthorizedWithToken(pref))
+        eventCreateNewScheduleClicked.value = CreateNewScheduleData(true)
     }
     fun setCreateNewScheduleEventHandled() {
-        eventCreateNewScheduleClicked.value = CreateNewScheduleData(false, false)
+        eventCreateNewScheduleClicked.value = CreateNewScheduleData(false)
     }
 
-    fun createNewSchedule(name: String, alias: String) {
-        repository.createNewSchedule(name, alias, createNewScheduleResponseLiveData)
+    fun createNewSchedule(name: String) {
+        repository.createNewSchedule(name, createNewScheduleResponseLiveData)
     }
 
 }

@@ -1,6 +1,7 @@
 package brotifypacha.scheduler.view_schedule_fragment
 
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
@@ -10,12 +11,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import brotifypacha.scheduler.R
+import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.databinding.FragmentDayBinding
 import java.text.SimpleDateFormat
 import java.util.*
@@ -74,12 +77,10 @@ class DayFragment : Fragment() {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = dayData.date
 
-            val format = SimpleDateFormat("dd.MM.yy")
 
+            bind.date.setText(Utils.formatDate(calendar.timeInMillis))
             if (DateUtils.isToday(dayData.date)) {
-                bind.date.setText(format.format(calendar.time)+" (сегодня)")
-            } else {
-                bind.date.setText(format.format(calendar.time))
+                bind.date.setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
             }
             (bind.recycler.adapter as LessonsAdapter).setData(dayData.lessons)
         })

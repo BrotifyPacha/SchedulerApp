@@ -49,10 +49,10 @@ class ScheduleListAdapter(val itemClickListener: OnScheduleClickListener, val it
 
     fun setSchedules(schedules: List<Schedule>){
         dataset.clear()
-        TODO("Заимплементить DiffUtil")
-        /*schedules.forEach {
-            dataset.add(it.copy())
-        }*/
+        //TODO("Заимплементить DiffUtil")
+        //schedules.forEach {
+        //    dataset.add(it.copy())
+        //}
         dataset.addAll(schedules)
         notifyDataSetChanged()
     }
@@ -108,16 +108,6 @@ class ScheduleListAdapter(val itemClickListener: OnScheduleClickListener, val it
             }
             viewBinding.root.setOnLongClickListener {
                 longClickListener.onClick(schedule)
-            }
-            if (schedule.alias.length < 1){
-                viewBinding.scheduleName.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24f)
-                viewBinding.scheduleName.setPadding(
-                    viewBinding.scheduleName.paddingLeft,
-                    viewBinding.scheduleName.paddingTop,
-                    viewBinding.scheduleName.paddingRight,
-                    16
-                )
-                viewBinding.aliasLayout.visibility = View.GONE
             }
             viewBinding.schedule = schedule
 

@@ -5,11 +5,10 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = arrayOf(Schedule::class, User::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(Schedule::class), version = 1, exportSchema = false)
 abstract class SchedulerDataBase : RoomDatabase() {
 
     abstract fun getSchedulesDao() : SchedulesDao
-    abstract fun getUsersDao() : UsersDao
 
     companion object {
 

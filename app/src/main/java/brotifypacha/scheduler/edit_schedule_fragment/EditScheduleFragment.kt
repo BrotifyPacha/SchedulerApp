@@ -24,14 +24,6 @@ import brotifypacha.scheduler.confirmation_modal.FirstDayPickerModal
 import brotifypacha.scheduler.Modals.ContextMenuModal
 import brotifypacha.scheduler.databinding.FragmentViewEditScheduleBinding
 import brotifypacha.scheduler.Modals.ManageScheduleDataModal
-import brotifypacha.scheduler.Utils
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdSize
-import com.google.android.gms.ads.formats.NativeAdOptions
-import com.google.android.gms.ads.formats.UnifiedNativeAd
-import com.google.android.gms.ads.formats.UnifiedNativeAdView
 
 class EditScheduleFragment : Fragment() {
 
@@ -74,57 +66,6 @@ class EditScheduleFragment : Fragment() {
 
         bind.viewPager.adapter = EditSchedulePagerAdapter(childFragmentManager)
         bind.tabLayout.setupWithViewPager(bind.viewPager)
-
-        val request = AdRequest.Builder().build()
-        bind.adView.loadAd(request)
-        bind.adView.adListener = object: AdListener(){
-            override fun onAdFailedToLoad(p0: Int) {
-                bind.adView.visibility = View.GONE
-                val adLoader = AdLoader.Builder(context!!, "ca-app-pub-3940256099942544/2247696110")
-                    .forUnifiedNativeAd { ad : UnifiedNativeAd ->
-                        val adView = layoutInflater.inflate(R.layout.native_ad_layout, null) as UnifiedNativeAdView
-                        bind.adViewPlaceholder.layoutTransition.enableTransitionType(LayoutTransition.APPEARING)
-                        bind.titleAdContainer.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
-                        adView.findViewById<TextView>(R.id.ad_header).setText(ad.headline)
-                        adView.findViewById<TextView>(R.id.ad_body).setText(ad.body)
-
-
-                        if (ad.advertiser != null && ad.advertiser.isNotBlank())
-                            adView.findViewById<TextView>(R.id.ad_advertiser).setText(ad.advertiser)
-
-
-                        adView.headlineView = adView.findViewById(R.id.ad_header)
-                        adView.bodyView = adView.findViewById(R.id.ad_body)
-                        adView.advertiserView = adView.findViewById(R.id.ad_advertiser)
-                        adView.adChoicesView = adView.findViewById(R.id.ad_choices)
-
-
-                        bind.adViewPlaceholder.removeAllViews()
-                        bind.adViewPlaceholder.addView(adView)
-                    }
-                    .withAdListener(object : AdListener() {
-                        override fun onAdFailedToLoad(errorCode: Int) {
-                            Log.e(TAG, errorCode.toString())
-                            bind.adViewPlaceholder.visibility = View.GONE
-                        }
-                    })
-                    .withNativeAdOptions(
-                        NativeAdOptions.Builder()
-                            .setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
-                            // Methods in the NativeAdOptions.Builder class can be
-                            // used here to specify individual options settings.
-                            .build())
-                    .build()
-                adLoader.loadAd(AdRequest.Builder()
-                    .build())
-            }
-        }
-
-
-        //val nativeAdViewLayout = LayoutInflater.from(context!!).inflate(R.layout.native_ad_layout, bind.unifiedNativeAdview, false)
-
-
-
 
         return bind.root
     }
@@ -257,13 +198,11 @@ class EditScheduleFragment : Fragment() {
     private fun showChangeNameOrAliasModal() {
 
         val editScheduleModal = ManageScheduleDataModal.newInstance(
-            viewModel.isAuthWithToken(),
             ManageScheduleDataModal.MODE_EDIT,
-            viewModel.editedSchedule.name,
-            viewModel.editedSchedule.alias
+            viewModel.editedSchedule.name
         )
-        editScheduleModal.setOnNextButtonClickListener { name, alias ->
-            viewModel.onChangeNameOrAlias(name, alias)
+        editScheduleModal.setOnNextButtonClickListener { name ->
+            viewModel.onChangeNameOrAlias(name)
         }
         editScheduleModal.show(childFragmentManager, ManageScheduleDataModal.FRAGMENT_TAG)
     }

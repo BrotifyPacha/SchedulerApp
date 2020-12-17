@@ -151,17 +151,10 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
         onSaveChangesEvent.value = false
     }
 
-    fun isAuthWithToken(): Boolean {
-        return Utils.isAuthorizedWithToken(repository.pref)
+    fun onChangeNameOrAlias(name: String) {
+        editedSchedule = editedSchedule.copy(name = name)
     }
 
-    fun onChangeNameOrAlias(name: String, alias: String) {
-        editedSchedule = editedSchedule.copy(name = name, alias = alias)
-    }
-
-    fun verifyAlias(alias: String) {
-        repository.verifyAlias(scheduleId, alias, eventAliasVerified)
-    }
     fun getEventAliasVerified(): LiveData<ResultModel<Unit>>{
         return eventAliasVerified
     }
