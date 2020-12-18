@@ -34,6 +34,7 @@ android {
 
 dependencies {
 
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
     def work_version = "2.0.1"
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
