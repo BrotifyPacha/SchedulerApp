@@ -87,7 +87,7 @@ class ScheduleListFragment : Fragment() {
         })
         viewModel.getOnScheduleClickEvent().observe(viewLifecycleOwner, Observer { id ->
             if (id != null) {
-                this.findNavController().navigate(R.id.viewScheduleFragment, Bundle().apply {
+                findNavController().navigate(R.id.action_view_schedule, Bundle().apply {
                     putString(ViewScheduleFragment.ARG_SCHEDULE_ID, id)
                 })
                 viewModel.setScheduleClickHandled()
@@ -122,12 +122,12 @@ class ScheduleListFragment : Fragment() {
                             confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
                         }
                         1 -> {
-                            findNavController().navigate(R.id.addChange, Bundle().apply {
+                            findNavController().navigate(R.id.action_add_change, Bundle().apply {
                                 putString(AddChangeFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                         }
                         2 -> {
-                            this.findNavController().navigate(R.id.editScheduleFragment, Bundle().apply {
+                            findNavController().navigate(R.id.action_edit_schedule, Bundle().apply {
                                 putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                         }

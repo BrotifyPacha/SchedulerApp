@@ -10,43 +10,65 @@
               android:name="brotifypacha.scheduler.schedules_list_fragment.ScheduleListFragment"
               android:label="fragment_schedule_list"
               tools:layout="@layout/fragment_schedule_list">
-        <action android:id="@+id/viewScheduleFromList"
-                app:destination="@id/viewScheduleFragment"
-                app:popUpTo="@+id/scheduleListFragment"
-        />
-        <action android:id="@+id/actionEditSchedule"
-                app:destination="@id/editScheduleFragment"
-                app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-        <action android:id="@+id/addChange"
-                app:destination="@id/addChangeDialogFragment" app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action
+            android:id="@+id/action_view_schedule"
+            app:destination="@id/viewScheduleFragment"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:popUpTo="@id/scheduleListFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_edit_schedule"
+            app:destination="@id/editScheduleFragment"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:popUpTo="@id/scheduleListFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_add_change"
+            app:destination="@id/addChangeDialogFragment"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:popUpTo="@id/scheduleListFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment android:id="@+id/viewScheduleFragment"
               android:name="brotifypacha.scheduler.view_schedule_fragment.ViewScheduleFragment"
               android:label="fragment_view_schedule"
               tools:layout="@layout/fragment_view_edit_schedule">
         <argument android:name="scheduleId" app:argType="string"/>
-        <action android:id="@+id/actionEditSchedule"
-                app:destination="@id/editScheduleFragment"
-                app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim"
-                app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-        <action android:id="@+id/addChange"
-                app:destination="@id/addChangeDialogFragment" app:enterAnim="@anim/nav_default_enter_anim"
-                app:exitAnim="@anim/nav_default_exit_anim" app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-                app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
+        <action
+            android:id="@+id/action_edit_schedule_from_view_schedule"
+            app:destination="@id/editScheduleFragment"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:popUpTo="@id/viewScheduleFragment"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_add_change_from_view_schedule"
+            app:destination="@id/addChangeDialogFragment"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:popUpTo="@id/viewScheduleFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment android:id="@+id/editScheduleFragment"
-              android:name="brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment"
+        android:name="brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment"
               android:label="edit_schedule_fragment" tools:layout="@layout/fragment_view_edit_schedule">
         <argument android:name="scheduleId" app:argType="string"/>
     </fragment>
     <fragment android:id="@+id/addChangeDialogFragment"
               android:name="brotifypacha.scheduler.add_change_fragment.AddChangeFragment"
+              tools:layout="@layout/fragment_add_change_modal"
               android:label="AddChangeDialogFragment"/>
 </navigation>

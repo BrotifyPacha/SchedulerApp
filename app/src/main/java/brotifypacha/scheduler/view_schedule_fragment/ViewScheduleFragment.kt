@@ -1,23 +1,19 @@
 package brotifypacha.scheduler.view_schedule_fragment
 
 import android.app.DatePickerDialog
-import android.content.Context
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Modals.ConfirmationModal
 import brotifypacha.scheduler.Modals.ContextMenuModal
-import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.add_change_fragment.AddChangeFragment
 import brotifypacha.scheduler.databinding.FragmentViewEditScheduleBinding
 import brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment
@@ -155,13 +151,13 @@ class ViewScheduleFragment : Fragment() {
                             confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
                         }
                         1 -> {
-                            findNavController().navigate(R.id.addChange, Bundle().apply {
+                            findNavController().navigate(R.id.action_add_change_from_view_schedule, Bundle().apply {
                                 putString(AddChangeFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                             bottomDialog.dismiss()
                         }
                         2 -> {
-                            this.findNavController().navigate(R.id.editScheduleFragment, Bundle().apply {
+                            findNavController().navigate(R.id.action_edit_schedule_from_view_schedule, Bundle().apply {
                                 putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                             bottomDialog.dismiss()
