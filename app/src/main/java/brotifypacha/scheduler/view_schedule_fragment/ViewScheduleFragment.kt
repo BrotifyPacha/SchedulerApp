@@ -1,14 +1,10 @@
 package brotifypacha.scheduler.view_schedule_fragment
 
 import android.app.DatePickerDialog
-import android.content.Context
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.os.SystemClock
-import android.os.SystemClock.sleep
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
@@ -17,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Modals.ConfirmationModal
 import brotifypacha.scheduler.Modals.ContextMenuModal
-import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.add_change_fragment.AddChangeFragment
 import brotifypacha.scheduler.databinding.FragmentViewEditScheduleBinding
 import brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment
@@ -68,15 +63,15 @@ class ViewScheduleFragment : Fragment() {
                 val calendar = Calendar.getInstance()
                 calendar.timeInMillis = viewModel.selectedWeekDate
                 DatePickerDialog(
-                    context!!,
-                    R.style.AppTheme_DatePickerDialog,
-                    DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
-                        calendar.set(year, month, dayOfMonth)
-                        viewModel.setSelectedWeekByDate(calendar.timeInMillis)
-                    },
-                    calendar.get(Calendar.YEAR),
-                    calendar.get(Calendar.MONTH),
-                    calendar.get(Calendar.DAY_OF_MONTH)
+                        context!!,
+                        R.style.AppTheme_DatePickerDialog,
+                        DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
+                            calendar.set(year, month, dayOfMonth)
+                            viewModel.setSelectedWeekByDate(calendar.timeInMillis)
+                        },
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
             0 -> {
@@ -93,7 +88,6 @@ class ViewScheduleFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         val id = arguments!!.getString(ARG_SCHEDULE_ID)!!
         viewModel = ViewModelProviders.of(this, ViewScheduleViewModel.Factory(id, activity!!.application)).get(ViewScheduleViewModel::class.java)
-        //activityViewModel = ViewModelProviders.of(activity!!).get(MainActivityViewModel::class.java)
 
         viewModel.getErrorEvent().observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -109,19 +103,16 @@ class ViewScheduleFragment : Fragment() {
         })
 
         viewModel.getScheduleLiveData().observe(viewLifecycleOwner, Observer { schedule ->
-            Log.d(TAG, "getScheduleLiveDAta")
             bind.title = schedule.name
             viewModel.setSelectedWeekByDate(Calendar.getInstance().timeInMillis)
         })
         viewModel.getOnWeekSelectedEvent().observe(viewLifecycleOwner, Observer {
-            Log.d(TAG, "getOnWeekSeelectedEvent")
             bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
-            bind.viewPager.setCurrentItem(it.currentDay, true)
-            bind.tabLayout.setupWithViewPager(bind.viewPager, false)
+            bind.tabLayout.setupWithViewPager(bind.viewPager, true)
+            bind.viewPager.setCurrentItem(it.currentDay)
 
         })
         viewModel.getOnMenuClickEvent().observe(viewLifecycleOwner, Observer { data ->
-            Log.d(TAG, "getOnMenuClickEvent")
             if (data != null){
                 val bottomDialog = ContextMenuModal.newInstance(
                         listOf(
@@ -151,13 +142,13 @@ class ViewScheduleFragment : Fragment() {
                             confirmationModal.show(childFragmentManager, ConfirmationModal.FRAGMENT_TAG)
                         }
                         1 -> {
-                            findNavController().navigate(R.id.addChange, Bundle().apply {
+                            findNavController().navigate(R.id.action_add_change_from_view_schedule, Bundle().apply {
                                 putString(AddChangeFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                             bottomDialog.dismiss()
                         }
                         2 -> {
-                            this.findNavController().navigate(R.id.editScheduleFragment, Bundle().apply {
+                            findNavController().navigate(R.id.action_edit_schedule_from_view_schedule, Bundle().apply {
                                 putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })
                             bottomDialog.dismiss()
