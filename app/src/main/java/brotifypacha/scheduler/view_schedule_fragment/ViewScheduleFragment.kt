@@ -165,6 +165,5 @@ class ViewScheduleFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "refreshing")
-        viewModel.refreshSchedule()
     }
 }

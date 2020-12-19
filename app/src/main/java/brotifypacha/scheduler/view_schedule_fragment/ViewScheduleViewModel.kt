@@ -36,6 +36,7 @@ class ViewScheduleViewModel(val id: String, val app: Application) : AndroidViewM
 
     init {
         repository = ViewScheduleRepository(app, viewModelScope, errorEvent)
+        refreshSchedule()
     }
 
     fun refreshSchedule(){
