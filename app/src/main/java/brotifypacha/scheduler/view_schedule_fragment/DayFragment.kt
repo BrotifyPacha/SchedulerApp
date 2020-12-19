@@ -62,8 +62,6 @@ class DayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_day, container, false)
-        bind.recycler.layoutManager = LinearLayoutManager(context)
-        bind.recycler.adapter = LessonsAdapter(ArrayList())
         return bind.root
     }
 
@@ -81,7 +79,10 @@ class DayFragment : Fragment() {
             if (DateUtils.isToday(dayData.date)) {
                 bind.date.setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
             }
-            (bind.recycler.adapter as LessonsAdapter).setData(dayData.lessons)
+            val name_ids = listOf(bind.lessonName1, bind.lessonName2, bind.lessonName3, bind.lessonName4, bind.lessonName5, bind.lessonName6, bind.lessonName7, bind.lessonName8, bind.lessonName9)
+            for (i in 0..8) {
+                name_ids[i].setText(dayData.lessons[i])
+            }
         })
     }
 
