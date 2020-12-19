@@ -1,22 +1,15 @@
 package brotifypacha.scheduler.edit_schedule_fragment
 
-import android.animation.LayoutTransition
-import android.app.DownloadManager
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import brotifypacha.scheduler.AnimUtils
-import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.Modals.ConfirmationModal
 
 import brotifypacha.scheduler.R
@@ -53,7 +46,6 @@ class EditScheduleFragment : Fragment() {
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_view_edit_schedule, container, false)
         bind.title = "Редактирование расписания"
 
-        (bind.root as SwipeRefreshLayout).isEnabled = false
         bind.appbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         bind.appbar.setNavigationOnClickListener {
             val confirmationModal = ConfirmationModal.newInstance("Вы уверены что хотите выйти не сохранив изменения?", "Выйти", "Отмена")

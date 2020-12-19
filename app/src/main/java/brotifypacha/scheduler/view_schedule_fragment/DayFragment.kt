@@ -68,15 +68,14 @@ class DayFragment : Fragment() {
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         val parentViewModel = ViewModelProviders.of(parentFragment!!).get(ViewScheduleViewModel::class.java)
         val dayOfWeek: Int = arguments!!.getInt(ARG_NUMBER)
 
         parentViewModel.getOnWeekSelectedEvent().observe(viewLifecycleOwner, Observer {
-
             val dayData = it.currentWeek[dayOfWeek]
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = dayData.date
-
 
             bind.date.setText(Utils.formatDate(calendar.timeInMillis))
             if (DateUtils.isToday(dayData.date)) {
@@ -84,7 +83,6 @@ class DayFragment : Fragment() {
             }
             (bind.recycler.adapter as LessonsAdapter).setData(dayData.lessons)
         })
-        super.onActivityCreated(savedInstanceState)
     }
 
     data class DayFragmentData(val date: Long, val currentWeek: List<List<String>>)

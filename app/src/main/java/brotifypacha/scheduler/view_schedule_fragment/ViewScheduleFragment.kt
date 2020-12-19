@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.content.Context
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.os.SystemClock
+import android.os.SystemClock.sleep
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -12,8 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Modals.ConfirmationModal
 import brotifypacha.scheduler.Modals.ContextMenuModal
@@ -47,7 +47,6 @@ class ViewScheduleFragment : Fragment() {
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_view_edit_schedule, container, false)
         (activity!! as AppCompatActivity).setSupportActionBar(bind.appbar)
         bind.title = "Расписание"
-        (bind.root as SwipeRefreshLayout).isEnabled = false
         bind.appbar.setNavigationIcon(R.drawable.ic_outline_event_24px)
 
         return bind.root
@@ -81,8 +80,6 @@ class ViewScheduleFragment : Fragment() {
                 ).show()
             }
             0 -> {
-                (bind.root as SwipeRefreshLayout).isEnabled = true
-                (bind.root as SwipeRefreshLayout).isRefreshing = true
                 viewModel.refreshSchedule()
             }
             1 -> {
@@ -96,9 +93,7 @@ class ViewScheduleFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         val id = arguments!!.getString(ARG_SCHEDULE_ID)!!
         viewModel = ViewModelProviders.of(this, ViewScheduleViewModel.Factory(id, activity!!.application)).get(ViewScheduleViewModel::class.java)
-        activityViewModel = ViewModelProviders.of(activity!!).get(MainActivityViewModel::class.java)
-
-        bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
+        //activityViewModel = ViewModelProviders.of(activity!!).get(MainActivityViewModel::class.java)
 
         viewModel.getErrorEvent().observe(viewLifecycleOwner, Observer {
             if (it != null) {
@@ -110,22 +105,23 @@ class ViewScheduleFragment : Fragment() {
         viewModel.getRefreshedEvent().observe(viewLifecycleOwner, Observer{
             if (it){
                 viewModel.setRefreshedEventHandled()
-                (bind.root as SwipeRefreshLayout).isRefreshing = false
-                (bind.root as SwipeRefreshLayout).isEnabled = false
             }
         })
 
         viewModel.getScheduleLiveData().observe(viewLifecycleOwner, Observer { schedule ->
+            Log.d(TAG, "getScheduleLiveDAta")
             bind.title = schedule.name
-            Log.d(TAG, "${viewModel.selectedWeekDate == -1.toLong()}")
             viewModel.setSelectedWeekByDate(Calendar.getInstance().timeInMillis)
         })
         viewModel.getOnWeekSelectedEvent().observe(viewLifecycleOwner, Observer {
-            bind.tabLayout.setupWithViewPager(bind.viewPager, true)
-            bind.viewPager.setCurrentItem(it.currentDay)
+            Log.d(TAG, "getOnWeekSeelectedEvent")
+            bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
+            bind.viewPager.setCurrentItem(it.currentDay, true)
+            bind.tabLayout.setupWithViewPager(bind.viewPager, false)
 
         })
         viewModel.getOnMenuClickEvent().observe(viewLifecycleOwner, Observer { data ->
+            Log.d(TAG, "getOnMenuClickEvent")
             if (data != null){
                 val bottomDialog = ContextMenuModal.newInstance(
                         listOf(
