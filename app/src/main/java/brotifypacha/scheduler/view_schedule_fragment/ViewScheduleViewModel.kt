@@ -1,13 +1,14 @@
 package brotifypacha.scheduler.view_schedule_fragment
 
 import android.app.Application
-import android.os.Parcelable
-import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import brotifypacha.scheduler.BaseRepository
 import brotifypacha.scheduler.database.Schedule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,16 +36,19 @@ class ViewScheduleViewModel(val id: String, val app: Application) : AndroidViewM
 
     init {
         repository = ViewScheduleRepository(app, viewModelScope, errorEvent)
-        refreshSchedule()
     }
 
     fun refreshSchedule(){
         if (::scheduleQuery.isInitialized) scheduleMediatorLiveData.removeSource(scheduleQuery)
-        scheduleQuery = repository.getSchedule(id)
-        scheduleMediatorLiveData.addSource(scheduleQuery, Observer {
-            scheduleMediatorLiveData.value = it
-        })
-        refreshedEvent.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            scheduleQuery = repository.getSchedule(id)
+            withContext(Dispatchers.Main){
+                scheduleMediatorLiveData.addSource(scheduleQuery, Observer {
+                    scheduleMediatorLiveData.value = it
+                })
+                refreshedEvent.value = true
+            }
+        }
     }
 
 
@@ -88,16 +92,22 @@ class ViewScheduleViewModel(val id: String, val app: Application) : AndroidViewM
 
 
     fun setSelectedWeekByDate(date: Long){
-        selectedWeekDate = date
-        val dayOfWeek = getDayOfWeek(date)
-        val arrayList = ArrayList<DayData>()
-        for (i in 0..6){
-            val calendar = Calendar.getInstance()
-            calendar.timeInMillis = date + (i - dayOfWeek) * 1000*60*60*24
-            val lessons = getScheduleForDate(calendar.timeInMillis)
-            arrayList.add(DayData(calendar.timeInMillis, lessons))
+        viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                selectedWeekDate = date
+                val dayOfWeek = getDayOfWeek(date)
+                val arrayList = ArrayList<DayData>()
+                for (i in 0..6){
+                    val calendar = Calendar.getInstance()
+                    calendar.timeInMillis = date + (i - dayOfWeek) * 1000*60*60*24
+                    val lessons = getScheduleForDate(calendar.timeInMillis)
+                    arrayList.add(DayData(calendar.timeInMillis, lessons))
+                }
+                withContext(Dispatchers.Main){
+                    onWeekSelectedEvent.value = WeekSelectedEventData(dayOfWeek, arrayList)
+                }
+            }
         }
-        onWeekSelectedEvent.value = WeekSelectedEventData(dayOfWeek, arrayList)
     }
 
     /**
