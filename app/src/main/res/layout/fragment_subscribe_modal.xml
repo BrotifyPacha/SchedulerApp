@@ -27,7 +27,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Идентификатор расписания на которое вы бы хотели подписаться"
-                    android:textColor="@color/mtrl_dark_on_surface_disabled"/>
+                    android:textColor="@color/secondaryTextColor"/>
 
         </LinearLayout>
         <Button
