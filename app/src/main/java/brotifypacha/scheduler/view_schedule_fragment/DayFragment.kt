@@ -70,13 +70,13 @@ class DayFragment : Fragment() {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = dayData.date
 
-            bind.date.animateTextViewChange(Utils.formatDate(calendar.timeInMillis))
+            bind.date.animateTextViewChange(Utils.formatDate(calendar.timeInMillis), 350)
             if (DateUtils.isToday(dayData.date)) {
                 bind.date.setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
             }
             val nameTextViews = listOf(bind.lessonName1, bind.lessonName2, bind.lessonName3, bind.lessonName4, bind.lessonName5, bind.lessonName6, bind.lessonName7, bind.lessonName8, bind.lessonName9)
             for (i in 0..8) {
-                nameTextViews[i].animateTextViewChange(dayData.lessons[i])
+                nameTextViews[i].animateTextViewChange(dayData.lessons[i], 350)
             }
         })
     }

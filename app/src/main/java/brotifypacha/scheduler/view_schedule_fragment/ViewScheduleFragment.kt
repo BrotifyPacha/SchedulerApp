@@ -91,7 +91,7 @@ class ViewScheduleFragment : Fragment() {
         viewModel = ViewModelProviders.of(this, ViewScheduleViewModel.Factory(id, activity!!.application)).get(ViewScheduleViewModel::class.java)
 
         viewModel.getScheduleLiveData().observe(viewLifecycleOwner, Observer { schedule ->
-            bind.include.header.animateTextViewChange(schedule.name)
+            bind.include.header.animateTextViewChange(schedule.name, 350)
             viewModel.setSelectedWeekByDate(Calendar.getInstance().timeInMillis)
         })
         viewModel.getOnWeekSelectedEvent().observe(viewLifecycleOwner, Observer {

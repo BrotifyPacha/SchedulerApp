@@ -26,8 +26,7 @@ class AnimUtils {
                 .start()
         }
 
-        fun TextView.animateTextViewChange(text: String){
-            val duration: Long = 250L
+        fun TextView.animateTextViewChange(text: String, duration: Long){
             this.animate()
                 .alpha(0f)
                 .setDuration( if (this.text.isBlank()) 0L else duration )
