@@ -50,11 +50,40 @@
             tools:ignore="BottomAppBar" />
 
         <com.google.android.material.tabs.TabLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:tabIndicatorGravity="top"
-            app:tabTextColor="@color/primaryTextColor"
-            app:tabSelectedTextColor="@color/primaryColor"
-            app:layout_constraintBottom_toTopOf="@+id/appbar" android:id="@+id/tabLayout"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabIndicatorGravity="top"
+                app:tabTextColor="@color/primaryTextColor"
+                app:tabSelectedTextColor="@color/primaryColor"
+                app:layout_constraintBottom_toTopOf="@+id/appbar" android:id="@+id/tabLayout">
+            <com.google.android.material.tabs.TabItem
+                    android:text="Пн"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Вт"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Ср"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Чт"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Пт"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Сб"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem
+                    android:text="Вс"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+        </com.google.android.material.tabs.TabLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

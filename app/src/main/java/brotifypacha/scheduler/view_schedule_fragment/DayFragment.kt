@@ -1,7 +1,6 @@
 package brotifypacha.scheduler.view_schedule_fragment
 
 
-import android.graphics.Typeface
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Log
@@ -9,20 +8,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-
+import brotifypacha.scheduler.AnimUtils.Companion.animateTextViewChange
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.databinding.FragmentDayBinding
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -75,13 +70,13 @@ class DayFragment : Fragment() {
             val calendar = Calendar.getInstance()
             calendar.timeInMillis = dayData.date
 
-            bind.date.setText(Utils.formatDate(calendar.timeInMillis))
+            bind.date.animateTextViewChange(Utils.formatDate(calendar.timeInMillis))
             if (DateUtils.isToday(dayData.date)) {
                 bind.date.setTextColor(ContextCompat.getColor(context!!, R.color.primaryColor))
             }
-            val name_ids = listOf(bind.lessonName1, bind.lessonName2, bind.lessonName3, bind.lessonName4, bind.lessonName5, bind.lessonName6, bind.lessonName7, bind.lessonName8, bind.lessonName9)
+            val nameTextViews = listOf(bind.lessonName1, bind.lessonName2, bind.lessonName3, bind.lessonName4, bind.lessonName5, bind.lessonName6, bind.lessonName7, bind.lessonName8, bind.lessonName9)
             for (i in 0..8) {
-                name_ids[i].setText(dayData.lessons[i])
+                nameTextViews[i].animateTextViewChange(dayData.lessons[i])
             }
         })
     }

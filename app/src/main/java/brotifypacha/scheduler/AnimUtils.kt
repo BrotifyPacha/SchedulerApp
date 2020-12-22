@@ -1,6 +1,7 @@
 package brotifypacha.scheduler
 
 import android.view.View
+import android.widget.TextView
 
 class AnimUtils {
     companion object{
@@ -23,6 +24,22 @@ class AnimUtils {
                         .start()
                 }
                 .start()
+        }
+
+        fun TextView.animateTextViewChange(text: String){
+            val duration: Long = 250L
+            this.animate()
+                .alpha(0f)
+                .setDuration( if (this.text.isBlank()) 0L else duration )
+                .withEndAction{
+                    this.text = text
+                    this.animate()
+                        .alpha(1f)
+                        .setDuration( if (text.isBlank()) 0L else duration )
+                        .start()
+                }
+                .start()
+
         }
     }
 

@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import brotifypacha.scheduler.AnimUtils.Companion.animateTextViewChange
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Modals.ConfirmationModal
 import brotifypacha.scheduler.Modals.ContextMenuModal
@@ -40,10 +41,10 @@ class ViewScheduleFragment : Fragment() {
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle? ): View? {
         setHasOptionsMenu(true)
         bind = DataBindingUtil.inflate(inflater, R.layout.fragment_view_edit_schedule, container, false)
+        bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
         (activity!! as AppCompatActivity).setSupportActionBar(bind.appbar)
-        bind.title = "Расписание"
+        bind.title = ""
         bind.appbar.setNavigationIcon(R.drawable.ic_outline_event_24px)
-
         return bind.root
     }
 
@@ -89,27 +90,14 @@ class ViewScheduleFragment : Fragment() {
         val id = arguments!!.getString(ARG_SCHEDULE_ID)!!
         viewModel = ViewModelProviders.of(this, ViewScheduleViewModel.Factory(id, activity!!.application)).get(ViewScheduleViewModel::class.java)
 
-        viewModel.getErrorEvent().observe(viewLifecycleOwner, Observer {
-            if (it != null) {
-                activityViewModel.setErrorEvent(it)
-                viewModel.setErrorEventHandled()
-            }
-        })
-
-        viewModel.getRefreshedEvent().observe(viewLifecycleOwner, Observer{
-            if (it){
-                viewModel.setRefreshedEventHandled()
-            }
-        })
-
         viewModel.getScheduleLiveData().observe(viewLifecycleOwner, Observer { schedule ->
-            bind.title = schedule.name
+            bind.include.header.animateTextViewChange(schedule.name)
             viewModel.setSelectedWeekByDate(Calendar.getInstance().timeInMillis)
         })
         viewModel.getOnWeekSelectedEvent().observe(viewLifecycleOwner, Observer {
-            bind.viewPager.adapter = WeekViewPagerAdapter(childFragmentManager)
+            bind.viewPager.offscreenPageLimit = 1
             bind.tabLayout.setupWithViewPager(bind.viewPager, true)
-            bind.viewPager.setCurrentItem(it.currentDay)
+            bind.viewPager.setCurrentItem(it.currentDay, false)
 
         })
         viewModel.getOnMenuClickEvent().observe(viewLifecycleOwner, Observer { data ->
@@ -164,6 +152,5 @@ class ViewScheduleFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "refreshing")
     }
 }
