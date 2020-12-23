@@ -18,4 +18,11 @@ class BaseRepository(app: Application) {
             db.getSchedulesDao().getSchedule(scheduleId)
         }
     }
+
+    /**
+     * @return Schedule object if found or NULL
+     */
+    fun findScheduleByName(name: String) : Schedule? {
+        return db.getSchedulesDao().getSchedules().filter { it -> it.name == name }.firstOrNull()
+    }
 }

@@ -4,12 +4,15 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import brotifypacha.scheduler.BaseRepository
-import brotifypacha.scheduler.Utils
-import brotifypacha.scheduler.data_models.ResultModel
+import brotifypacha.scheduler.Modals.ManageScheduleDataModal.ManageScheduleInterface
+import brotifypacha.scheduler.Modals.ManageScheduleDataModal.ManageScheduleInterface.NameVerificationCode
 import brotifypacha.scheduler.database.Schedule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.ArrayList
 
-class EditScheduleViewModel(val app: Application, val scheduleId: String) : AndroidViewModel(app) {
+class EditScheduleViewModel(val app: Application, val scheduleId: String) : AndroidViewModel(app), ManageScheduleInterface {
 
     class Factory(val app: Application, val scheduleId: String): ViewModelProvider.Factory{
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -19,6 +22,7 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
     }
 
     val TAG = EditScheduleViewModel::class.java.simpleName
+    private val baseRepository: BaseRepository
     private val repository: EditScheduleRepository
 
     private val errorEvent = MutableLiveData<String>()
@@ -26,7 +30,7 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
     private val onSaveChangesEvent = MutableLiveData<Boolean>()
     private val eventPasteData = MutableLiveData<ArrayList<Boolean>>() // ArrayList of days that updated their view
     private val eventOnWeekCountChange = MutableLiveData<Int>()
-    private val eventAliasVerified = MutableLiveData<ResultModel<Unit>>()
+    private val eventNameVerified = MutableLiveData<ManageScheduleInterface.NameVerificationCode>()
     private val eventRequireFirstDaySet = MutableLiveData<Boolean>()
     var editedSchedule: Schedule
     val currentWeekLiveData = MutableLiveData<Int>()
@@ -37,10 +41,10 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
             val DATA_TYPE_WEEK = 1
         }
     }
-
     var copiedData: CopiedData? = null
 
     init {
+        baseRepository = BaseRepository(app)
         repository = EditScheduleRepository(app, viewModelScope, errorEvent)
         editedSchedule = BaseRepository(app).getSchedule(scheduleId)
         currentWeekLiveData.value = 0
@@ -107,13 +111,6 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
         return eventOnWeekCountChange
     }
 
-    fun getErrorEvent(): LiveData<String> {
-        return errorEvent
-    }
-    fun setErrorEventHandled(){
-        errorEvent.value = null
-    }
-
     fun getSchedule(scheduleId: String): Schedule {
         return BaseRepository(app).getSchedule(scheduleId)
     }
@@ -151,17 +148,6 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
         onSaveChangesEvent.value = false
     }
 
-    fun onChangeNameOrAlias(name: String) {
-        editedSchedule = editedSchedule.copy(name = name)
-    }
-
-    fun getEventAliasVerified(): LiveData<ResultModel<Unit>>{
-        return eventAliasVerified
-    }
-    fun setEventAliasVerifiedHandled(){
-        eventAliasVerified.value = null
-    }
-
     fun onFirstDaySet(date: Long) {
         editedSchedule = editedSchedule.copy(firstDay = date)
     }
@@ -171,6 +157,27 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
     }
     fun setEventRequireFirstDaySetHandled(){
         eventRequireFirstDaySet.value = false
+    }
+
+    override fun getNameVerifiedEvent(): LiveData<NameVerificationCode> {
+        return eventNameVerified
+    }
+
+    override fun verifyName(name: String) {
+        if (name.isBlank()) {
+            eventNameVerified.value = NameVerificationCode(NameVerificationCode.ERROR_NAME_LENGTH)
+        } else {
+            viewModelScope.launch(Dispatchers.IO){
+                val schedule: Schedule? = baseRepository.findScheduleByName(name)
+                withContext(Dispatchers.Main) {
+                    if (schedule != null) eventNameVerified.value = NameVerificationCode(NameVerificationCode.ERROR_NAME_NOT_UNIQUE)
+                    else {
+                        eventNameVerified.value = NameVerificationCode(NameVerificationCode.SUCCESS)
+                        editedSchedule = editedSchedule.copy(name = name)
+                    }
+                }
+            }
+        }
     }
 
 

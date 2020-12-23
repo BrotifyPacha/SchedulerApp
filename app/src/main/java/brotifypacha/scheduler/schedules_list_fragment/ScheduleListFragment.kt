@@ -142,10 +142,6 @@ class ScheduleListFragment : Fragment() {
         viewModel.getCreateNewScheduleEvent().observe(viewLifecycleOwner, Observer {
             if (it.clicked == false) return@Observer
             val createNewScheduleDialog = ManageScheduleDataModal.newInstance(ManageScheduleDataModal.MODE_CREATE, null)
-            createNewScheduleDialog.setOnNextButtonClickListener { name ->
-                createNewScheduleDialog.dismiss()
-                viewModel.refreshScheduleList()
-            }
             createNewScheduleDialog.show(childFragmentManager, "create_new_schedule_dialog")
             viewModel.setCreateNewScheduleEventHandled()
         })

@@ -2,46 +2,36 @@ package brotifypacha.scheduler.Modals
 
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.*
 import brotifypacha.scheduler.AnimUtils.Companion.animateViewWiggle
-import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.R;
-import brotifypacha.scheduler.data_models.ResultModel
 import brotifypacha.scheduler.databinding.FragmentCreateScheduleModalBinding
 import brotifypacha.scheduler.edit_schedule_fragment.EditScheduleViewModel
 import brotifypacha.scheduler.schedules_list_fragment.ScheduleListViewModel
-import java.util.regex.Pattern
 
-// TODO: Customize parameter argument names
 const val ARG_ITEMS = "item_count"
-
-/**
- *
- * A fragment that shows a list of items as a modal bottom sheet.
- *
- * You can show this modal bottom sheet from your activity like this:
- * <pre>
- *    ContextMenuModal.newInstance(30).show(supportFragmentManager, "dialog")
- * </pre>
- *
- * You activity (or fragment) needs to implement [ContextMenuModal.Listener].
- */
 
 class ManageScheduleDataModal : BottomSheetDialogFragment() {
 
     val TAG = ManageScheduleDataModal::class.java.simpleName
-    private var mListener: Listener? = null
+
+    interface ManageScheduleInterface{
+        data class NameVerificationCode(val code: Int){
+            companion object {
+                val VERIFICATION_HANDLED = 0
+                val SUCCESS = 1
+                val ERROR_NAME_LENGTH = 2
+                val ERROR_NAME_NOT_UNIQUE = 3
+            }
+        }
+        fun getNameVerifiedEvent() : LiveData<NameVerificationCode>
+        fun verifyName(name: String)
+    }
 
     companion object {
-
-        //TODO GOTTA REFACTOR THIS CLASS!
         val FRAGMENT_TAG = "create_schedule_modal"
         val ARG_MODE = "mode"
         val ARG_NAME = "name"
@@ -68,9 +58,7 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
             ARG_MODE,
             MODE_CREATE
         )
-
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_create_schedule_modal, container, false)
-
         val parentViewModel: ViewModel
         when (mode){
             MODE_CREATE -> {
@@ -84,16 +72,9 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
 
         binding.nameEdit.requestFocus()
         (binding.root).setBackgroundColor(Color.TRANSPARENT)
-
-        binding.nextButton.setOnClickListener {
-            if (mListener != null){
-                if (evaluateName()){
-                    val name =  binding.nameEdit.text.toString()
-                    if (mode == MODE_CREATE) {
-                        (parentViewModel as ScheduleListViewModel).createNewSchedule(name)
-                    }
-                }
-            }
+        binding.doneButton.setOnClickListener {
+            val name =  binding.nameEdit.text.toString()
+            (parentViewModel as ManageScheduleInterface).verifyName(name)
         }
         binding.cancelButton.setOnClickListener {
             dismiss()
@@ -104,53 +85,27 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        val parentViewModel: ViewModel
         if (mode!! == MODE_CREATE){
-            val parentViewModel = ViewModelProviders.of(parentFragment!!).get(ScheduleListViewModel::class.java)
-            parentViewModel.createNewScheduleResponseLiveData.observe(viewLifecycleOwner, Observer {
-                if (it != null) {
-                    if (it.result == ResultModel.CODE_SUCCESS) {
-                        if (mListener != null) {
-                            (mListener as Listener).onNextButtonClick(binding.nameEdit.text.toString())
-                        }
-                        parentViewModel.createNewScheduleResponseLiveData.value = null
-                    }
-                }
-            })
+            parentViewModel = ViewModelProviders.of(parentFragment!!).get(ScheduleListViewModel::class.java)
         } else {
-            val parentViewModel = ViewModelProviders.of(parentFragment!!).get(EditScheduleViewModel::class.java)
-            parentViewModel.getEventAliasVerified().observe(viewLifecycleOwner, Observer {
-                if (it != null){
-                    when (it.result){
-                        ResultModel.CODE_SUCCESS -> {
-                            if (mListener != null){
-                                (mListener as Listener).onNextButtonClick(
-                                    binding.nameEdit.text.toString()
-                                )
-                                dismiss()
-                            }
-                        }
-                    }
-                    parentViewModel.setEventAliasVerifiedHandled()
-                }
-            })
+            parentViewModel = ViewModelProviders.of(parentFragment!!).get(EditScheduleViewModel::class.java)
         }
+        (parentViewModel as ManageScheduleInterface).getNameVerifiedEvent().observe(viewLifecycleOwner, Observer {
+            when (it.code) {
+                ManageScheduleInterface.NameVerificationCode.ERROR_NAME_LENGTH -> {
+                    animateViewWiggle(binding.nameLayout)
+                    binding.footer.requestFocus()
+                    binding.nameLayout.helperText = "Название расписания должно содержать как минимум одну букву"
+                }
+                ManageScheduleInterface.NameVerificationCode.ERROR_NAME_NOT_UNIQUE -> {
+                    animateViewWiggle(binding.nameLayout)
+                    binding.nameLayout.helperText = "У вас уже есть расписание с таким же названием"
+                }
+                ManageScheduleInterface.NameVerificationCode.SUCCESS -> {
+                    dismiss()
+                }
+            }
+        })
     }
-    override fun onDetach() {
-        mListener = null
-        super.onDetach()
-    }
-
-    class Listener(val listener: (name: String) -> Unit) {
-        fun onNextButtonClick(name: String) = listener(name)
-    }
-    fun setOnNextButtonClickListener(listener: (name: String) -> Unit){
-        mListener = Listener(listener)
-    }
-
-    fun evaluateName() : Boolean {
-        if (binding.nameEdit.text.length < 3) return false
-        return true
-    }
-
-
 }

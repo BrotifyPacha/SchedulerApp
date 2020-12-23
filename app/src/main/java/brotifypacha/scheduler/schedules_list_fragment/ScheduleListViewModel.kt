@@ -3,21 +3,26 @@ package brotifypacha.scheduler.schedules_list_fragment
 import android.app.Application
 import androidx.lifecycle.*
 import brotifypacha.scheduler.BaseRepository
-import brotifypacha.scheduler.data_models.ResultModel
+import brotifypacha.scheduler.Modals.ManageScheduleDataModal.ManageScheduleInterface
+import brotifypacha.scheduler.Modals.ManageScheduleDataModal.ManageScheduleInterface.NameVerificationCode
 import brotifypacha.scheduler.database.Schedule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app) {
+class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app), ManageScheduleInterface {
 
     val TAG = ScheduleListViewModel::class.java.simpleName
 
 
+    private var baseRepository: BaseRepository
     private var repository: ScheduleListRepository
     private var scheduleList = MediatorLiveData<List<Schedule>>()
     private val eventSchedulesLoaded = MutableLiveData<Boolean>()
     private val eventScheduleClicked = MutableLiveData<String>()
     private val eventCreateNewScheduleClicked = MutableLiveData<CreateNewScheduleData>()
     private val eventScheduleLongClicked = MutableLiveData<ScheduleLongClickEventData>()
-    val createNewScheduleResponseLiveData = MutableLiveData<ResultModel<Unit>>()
+    private val eventNameVerified =  MutableLiveData<ManageScheduleInterface.NameVerificationCode>()
     private lateinit var query : LiveData<List<Schedule>>
 
     private val errorEvent = MutableLiveData<String>()
@@ -27,6 +32,7 @@ class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app
 
     init {
         repository = ScheduleListRepository(app, viewModelScope, errorEvent)
+        baseRepository = BaseRepository(app)
         refreshScheduleList()
     }
 
@@ -98,8 +104,24 @@ class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app
         eventCreateNewScheduleClicked.value = CreateNewScheduleData(false)
     }
 
-    fun createNewSchedule(name: String) {
-        repository.createNewSchedule(name, createNewScheduleResponseLiveData)
+    override fun getNameVerifiedEvent(): LiveData<NameVerificationCode> {
+        return eventNameVerified
     }
 
+    override fun verifyName(name: String) {
+        if (name.isBlank()) {
+            eventNameVerified.value = NameVerificationCode(NameVerificationCode.ERROR_NAME_LENGTH)
+        } else {
+            viewModelScope.launch(Dispatchers.IO){
+                val schedule: Schedule? = baseRepository.findScheduleByName(name)
+                withContext(Dispatchers.Main) {
+                    if (schedule != null) eventNameVerified.value = NameVerificationCode(NameVerificationCode.ERROR_NAME_NOT_UNIQUE)
+                    else {
+                        eventNameVerified.value = NameVerificationCode(NameVerificationCode.SUCCESS)
+                        repository.createNewSchedule(name)
+                    }
+                }
+            }
+        }
+    }
 }
