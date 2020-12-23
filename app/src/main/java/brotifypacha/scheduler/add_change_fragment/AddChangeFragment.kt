@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Utils
+import brotifypacha.scheduler.Utils.Companion.isSameDate
 import brotifypacha.scheduler.afterTextChanged
 import brotifypacha.scheduler.data_models.ChangeModel
 import brotifypacha.scheduler.database.Schedule
@@ -76,7 +76,7 @@ class AddChangeFragment: Fragment(){
         view.positive_button.setOnClickListener{
             CoroutineScope(Dispatchers.IO).launch {
                 val scheduleBeforeEdit = db.getSchedulesDao().getSchedule(scheduleId)
-                val changeList = ArrayList(scheduleBeforeEdit.getChangesAsList())
+                val changeList = ArrayList(scheduleBeforeEdit.getChangesAsList().filterNot{changeModel ->  isSameDate(changeModel.date, selectedDate)})
                 changeList.add(ChangeModel(selectedDate, lessons))
                 db.getSchedulesDao().update(scheduleBeforeEdit.copy(changes = Schedule.changesToStr(changeList)))
             }
