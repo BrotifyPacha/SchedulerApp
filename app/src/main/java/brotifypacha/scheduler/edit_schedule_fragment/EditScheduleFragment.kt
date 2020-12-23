@@ -2,7 +2,6 @@ package brotifypacha.scheduler.edit_schedule_fragment
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
@@ -108,7 +107,7 @@ class EditScheduleFragment : Fragment() {
         viewModel.getOnMenuClickEvent().observe(viewLifecycleOwner, Observer {
             if (it){
                 val itemList = arrayListOf(
-                    ContextMenuModal.ModalMenuItem(0, "Изменить название или индентификатор", R.drawable.ic_text_fields_black_24dp)
+                    ContextMenuModal.ModalMenuItem(0, "Изменить название", R.drawable.ic_text_fields_black_24dp)
                 )
                 if (viewModel.editedSchedule.getScheduleAsList().size > 1){
                     itemList.add(ContextMenuModal.ModalMenuItem(1, "Изменить дату начала первой недели", R.drawable.ic_outline_event_24px))
@@ -128,7 +127,7 @@ class EditScheduleFragment : Fragment() {
                 val contextMenuModal = ContextMenuModal.newInstance(itemList)
                 contextMenuModal.setOnItemClickListener {
                     when (it){
-                        0 -> showChangeNameOrAliasModal()
+                        0 -> showChangeNameModal()
                         1 -> {
                             val modal = FirstDayPickerModal.newInstance(false)
                             modal.setOnItemClickListener{ date: Long ->
@@ -163,7 +162,6 @@ class EditScheduleFragment : Fragment() {
 
         })
         viewModel.getCurrentWeekLiveData().observe(viewLifecycleOwner, Observer {
-            Log.d("SDADASD", "current week $it")
             if (::currentWeekMenuItem.isInitialized)
                 currentWeekMenuItem.setIcon(
                 when (it){
@@ -187,15 +185,8 @@ class EditScheduleFragment : Fragment() {
     }
 
 
-    private fun showChangeNameOrAliasModal() {
-
-        val editScheduleModal = ManageScheduleDataModal.newInstance(
-            ManageScheduleDataModal.MODE_EDIT,
-            viewModel.editedSchedule.name
-        )
-        editScheduleModal.setOnNextButtonClickListener { name ->
-            viewModel.onChangeNameOrAlias(name)
-        }
+    private fun showChangeNameModal() {
+        val editScheduleModal = ManageScheduleDataModal.newInstance( ManageScheduleDataModal.MODE_EDIT, viewModel.editedSchedule.name )
         editScheduleModal.show(childFragmentManager, ManageScheduleDataModal.FRAGMENT_TAG)
     }
 
