@@ -152,6 +152,7 @@ class EditScheduleFragment : Fragment() {
                     contextMenuModal.dismiss()
                 }
                 contextMenuModal.show(childFragmentManager, ContextMenuModal.FRAGMENT_TAG)
+                viewModel.setOnMenuClickEventHandled()
             }
         })
 

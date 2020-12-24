@@ -122,7 +122,7 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
         return onMenuClickEvent
     }
     fun setOnMenuClickEventHandled() {
-        onMenuClickEvent.value = null
+        onMenuClickEvent.value = false
     }
 
     fun onSaveChangesClick(){
