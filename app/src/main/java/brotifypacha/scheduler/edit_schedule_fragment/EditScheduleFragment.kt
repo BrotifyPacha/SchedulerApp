@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -85,7 +86,9 @@ class EditScheduleFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId){
-            android.R.id.home -> findNavController().popBackStack()
+            android.R.id.home -> {
+                onExitWithoutSavingDialog()
+            }
             2 ->  viewModel.onMenuClick()
             1 ->  viewModel.onPasteData(bind.tabLayout.selectedTabPosition)
             0 ->  viewModel.setCurrentWeekPlusOne()
@@ -96,8 +99,16 @@ class EditScheduleFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        scheduleId = arguments!!.getString(ARG_SCHEDULE_ID)!!
-        viewModel = ViewModelProviders.of(this, EditScheduleViewModel.Factory(activity!!.application, scheduleId)).get(EditScheduleViewModel::class.java)
+        scheduleId = requireArguments().getString(ARG_SCHEDULE_ID)!!
+        viewModel = ViewModelProviders.of(this, EditScheduleViewModel.Factory(requireActivity().application, scheduleId)).get(EditScheduleViewModel::class.java)
+
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    onExitWithoutSavingDialog()
+                }
+            })
 
         viewModel.getOnSavedChangesEvent().observe(viewLifecycleOwner, Observer {
             if (it){
@@ -185,6 +196,23 @@ class EditScheduleFragment : Fragment() {
 
     }
 
+    private fun onExitWithoutSavingDialog() {
+        if (viewModel.isScheduleModified()) {
+            val confirmationModal = ConfirmationModal.newInstance(
+                "У вас есть несохранненые изменения, сохранить?",
+                "Да",
+                "Нет"
+            )
+            confirmationModal.setOnItemClickListener({
+                    viewModel.onSaveChangesClick()
+                },
+                {
+                    confirmationModal.dismiss()
+                    findNavController().popBackStack()
+                })
+            confirmationModal.show(childFragmentManager, "tag")
+        } else findNavController().popBackStack()
+    }
 
     private fun showChangeNameModal() {
         val editScheduleModal = ManageScheduleDataModal.newInstance( ManageScheduleDataModal.MODE_EDIT, viewModel.editedSchedule.name )

@@ -33,6 +33,7 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
     private val eventNameVerified = MutableLiveData<ManageScheduleInterface.NameVerificationCode>()
     private val eventRequireFirstDaySet = MutableLiveData<Boolean>()
     var editedSchedule: Schedule
+    var schedule: Schedule
     val currentWeekLiveData = MutableLiveData<Int>()
 
     data class CopiedData(val type: Int, val data: Any){
@@ -46,7 +47,8 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
     init {
         baseRepository = BaseRepository(app)
         repository = EditScheduleRepository(app, viewModelScope, errorEvent)
-        editedSchedule = BaseRepository(app).getSchedule(scheduleId)
+        schedule = BaseRepository(app).getSchedule(scheduleId)
+        editedSchedule = schedule
         currentWeekLiveData.value = 0
         eventOnWeekCountChange.value = editedSchedule.getScheduleAsList().size
         Log.d(TAG, "viewModel initiated")
@@ -109,10 +111,6 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
 
     fun getOnWeekCountChange(): LiveData<Int>{
         return eventOnWeekCountChange
-    }
-
-    fun getSchedule(scheduleId: String): Schedule {
-        return BaseRepository(app).getSchedule(scheduleId)
     }
 
     fun onMenuClick(){
@@ -178,6 +176,13 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
                 }
             }
         }
+    }
+
+    fun isScheduleModified(): Boolean {
+        if (schedule.name != editedSchedule.name) return true
+        if (schedule.firstDay != editedSchedule.firstDay) return true
+        if (schedule.schedule != editedSchedule.schedule) return true
+        return false
     }
 
 
