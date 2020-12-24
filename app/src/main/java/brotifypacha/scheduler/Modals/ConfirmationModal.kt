@@ -29,7 +29,17 @@ class ConfirmationModal : BottomSheetDialogFragment() {
         val ARG_QUESTION = "question"
         val ARG_POSITIVE_LABEL = "positive_label"
         val ARG_NEGATIVE_LABEL = "negative_label"
+        val ARG_NEUTRAL_LABEL = "neutral_label"
 
+        fun newInstance(question: String, positiveLabel: String, negativeLabel: String, neutralLabel: String): ConfirmationModal =
+            ConfirmationModal().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_QUESTION, question)
+                    putString(ARG_POSITIVE_LABEL, positiveLabel)
+                    putString(ARG_NEGATIVE_LABEL, negativeLabel)
+                    putString(ARG_NEUTRAL_LABEL, neutralLabel)
+                }
+            }
         fun newInstance(question: String, positiveLabel: String, negativeLabel: String): ConfirmationModal =
             ConfirmationModal().apply {
                 arguments = Bundle().apply {
@@ -45,14 +55,20 @@ class ConfirmationModal : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_confirmation_modal, container, false)
-        view.question_text.text = arguments!!.getString(ARG_QUESTION)
-        view.positive_button.text = arguments!!.getString(ARG_POSITIVE_LABEL)
-        view.negative_buttton.text = arguments!!.getString(ARG_NEGATIVE_LABEL)
+        view.question_text.text = requireArguments().getString(ARG_QUESTION)
+        view.positive_button.text = requireArguments().getString(ARG_POSITIVE_LABEL)
+        view.negative_button.text = requireArguments().getString(ARG_NEGATIVE_LABEL)
         view.positive_button.setOnClickListener {
             if (mListener != null) mListener!!.onPositiveButtonClick()
         }
-        view.negative_buttton.setOnClickListener {
+        view.negative_button.setOnClickListener {
             if (mListener != null) mListener!!.onNegativeButtonClick()
+        }
+        if (requireArguments().containsKey(ARG_NEUTRAL_LABEL)){
+            view.neutral_button.text = requireArguments().getString(ARG_NEUTRAL_LABEL)
+            view.neutral_button.setOnClickListener {
+                if (mListener != null) mListener!!.onNeutralButtonClick()
+            }
         }
         return view
     }
@@ -62,14 +78,16 @@ class ConfirmationModal : BottomSheetDialogFragment() {
         super.onDetach()
     }
 
-    class ActionListener(val positiveListener: () -> Unit, val negativeListener: () -> Unit) {
+    class ActionListener(val positiveListener: ()-> Unit, val negativeListener: () ->  Unit, val neutralListener: () -> Unit = {}){
         fun onPositiveButtonClick() = positiveListener()
         fun onNegativeButtonClick() = negativeListener()
+        fun onNeutralButtonClick() = neutralListener()
     }
 
-    fun setOnItemClickListener(
-        positive: () -> Unit,
-        negative: () -> Unit){
+    fun setOnItemClickListener( positive: () -> Unit, negative: () -> Unit, neutral: () -> Unit){
+        mListener = ActionListener(positive, negative, neutral)
+    }
+    fun setOnItemClickListener( positive: () -> Unit, negative: () -> Unit){
         mListener = ActionListener(positive, negative)
     }
 
