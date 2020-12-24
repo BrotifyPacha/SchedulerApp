@@ -31,13 +31,13 @@ class ConfirmationModal : BottomSheetDialogFragment() {
         val ARG_NEGATIVE_LABEL = "negative_label"
         val ARG_NEUTRAL_LABEL = "neutral_label"
 
-        fun newInstance(question: String, positiveLabel: String, negativeLabel: String, neutralLabel: String): ConfirmationModal =
+        fun newInstance(question: String, positiveLabel: String, neutralLabel: String, negativeLabel: String): ConfirmationModal =
             ConfirmationModal().apply {
                 arguments = Bundle().apply {
                     putString(ARG_QUESTION, question)
                     putString(ARG_POSITIVE_LABEL, positiveLabel)
-                    putString(ARG_NEGATIVE_LABEL, negativeLabel)
                     putString(ARG_NEUTRAL_LABEL, neutralLabel)
+                    putString(ARG_NEGATIVE_LABEL, negativeLabel)
                 }
             }
         fun newInstance(question: String, positiveLabel: String, negativeLabel: String): ConfirmationModal =
@@ -65,6 +65,7 @@ class ConfirmationModal : BottomSheetDialogFragment() {
             if (mListener != null) mListener!!.onNegativeButtonClick()
         }
         if (requireArguments().containsKey(ARG_NEUTRAL_LABEL)){
+            view.neutral_button.visibility = View.VISIBLE
             view.neutral_button.text = requireArguments().getString(ARG_NEUTRAL_LABEL)
             view.neutral_button.setOnClickListener {
                 if (mListener != null) mListener!!.onNeutralButtonClick()
@@ -78,14 +79,14 @@ class ConfirmationModal : BottomSheetDialogFragment() {
         super.onDetach()
     }
 
-    class ActionListener(val positiveListener: ()-> Unit, val negativeListener: () ->  Unit, val neutralListener: () -> Unit = {}){
+    class ActionListener(val positiveListener: ()-> Unit, val neutralListener: () ->  Unit, val negativeListener: () -> Unit = {}){
         fun onPositiveButtonClick() = positiveListener()
-        fun onNegativeButtonClick() = negativeListener()
         fun onNeutralButtonClick() = neutralListener()
+        fun onNegativeButtonClick() = negativeListener()
     }
 
-    fun setOnItemClickListener( positive: () -> Unit, negative: () -> Unit, neutral: () -> Unit){
-        mListener = ActionListener(positive, negative, neutral)
+    fun setOnItemClickListener( positive: () -> Unit, neutral: () -> Unit, negative: () -> Unit){
+        mListener = ActionListener(positive, neutral, negative)
     }
     fun setOnItemClickListener( positive: () -> Unit, negative: () -> Unit){
         mListener = ActionListener(positive, negative)
