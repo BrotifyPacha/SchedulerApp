@@ -60,7 +60,6 @@
     <style name="AppTheme.Widget.ButtonPrimary.Minimal" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:textAllCaps">false</item>
         <item name="rippleColor">@color/primaryColor</item>
-        <item name="android:background">@color/secondaryColor</item>
         <item name="android:backgroundTint" tools:targetApi="lollipop">@color/secondaryColor</item>
         <item name="android:textColor">@color/primaryColor</item>
         <item name="android:textSize">16sp</item>
