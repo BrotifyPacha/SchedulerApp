@@ -95,7 +95,6 @@ class ManageScheduleDataModal : BottomSheetDialogFragment() {
             when (it.code) {
                 ManageScheduleInterface.NameVerificationCode.ERROR_NAME_LENGTH -> {
                     animateViewWiggle(binding.nameLayout)
-                    binding.footer.requestFocus()
                     binding.nameLayout.helperText = "Название расписания должно содержать как минимум одну букву"
                 }
                 ManageScheduleInterface.NameVerificationCode.ERROR_NAME_NOT_UNIQUE -> {
