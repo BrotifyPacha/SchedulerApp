@@ -29,6 +29,11 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="AppTheme.LoadingScreen" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/loading_screen</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="colorPrimaryDark">@color/primaryColor</item> <!-- Setting colorPrimaryDark (color that is used for StatusBar) to color of background -->
+    </style>
 
     <style name="AppTheme.Widget.EditText" parent="Widget.AppCompat.EditText">
         <item name="android:inputType">textNoSuggestions</item>
