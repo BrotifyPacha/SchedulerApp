@@ -74,7 +74,8 @@ class ScheduleListAdapter(val itemClickListener: OnScheduleClickListener, val it
                 {
                     appbarSize = TypedValue.complexToDimensionPixelSize(tv.data, parent.context.getResources().getDisplayMetrics())
                 }
-                v.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, parent.height - appbarSize)
+                val headerSize = parent.getChildAt(0).height ?: 0
+                v.layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, parent.height - headerSize - appbarSize)
             } else {
                 v.setVisibility(View.GONE)
                 v.layoutParams = RecyclerView.LayoutParams(0, 0)
