@@ -41,6 +41,8 @@
                     android:id="@+id/bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:hideOnScroll="true"
+                    app:layout_scrollFlags="scroll|enterAlways"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
                     android:layout_gravity="bottom"
@@ -51,7 +53,11 @@
                     android:id="@+id/new_schedule_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:icon="@drawable/ic_add_24"
+                    app:iconTint="@color/secondaryColor"
                     app:layout_anchor="@id/bar"
+                    android:layout_marginBottom="32dp"
+                    app:layout_behavior=".behavior.ShrinkOnScrollBehavior"
                     android:text="Новое расписание"/>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
