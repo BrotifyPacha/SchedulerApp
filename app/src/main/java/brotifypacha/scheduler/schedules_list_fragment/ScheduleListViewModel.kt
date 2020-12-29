@@ -119,6 +119,7 @@ class ScheduleListViewModel(private val app: Application) : AndroidViewModel(app
                     else {
                         eventNameVerified.value = NameVerificationCode(NameVerificationCode.SUCCESS)
                         repository.createNewSchedule(name)
+                        eventNameVerified.value = NameVerificationCode(NameVerificationCode.VERIFICATION_HANDLED)
                     }
                 }
             }

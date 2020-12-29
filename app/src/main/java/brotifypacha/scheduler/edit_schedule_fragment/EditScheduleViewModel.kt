@@ -172,6 +172,7 @@ class EditScheduleViewModel(val app: Application, val scheduleId: String) : Andr
                     else {
                         eventNameVerified.value = NameVerificationCode(NameVerificationCode.SUCCESS)
                         editedSchedule = editedSchedule.copy(name = name)
+                        eventNameVerified.value = NameVerificationCode(NameVerificationCode.VERIFICATION_HANDLED)
                     }
                 }
             }
