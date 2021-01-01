@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import brotifypacha.scheduler.Constants
 
 import brotifypacha.scheduler.R
@@ -23,6 +25,7 @@ import brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment
 import brotifypacha.scheduler.main_activity.MainActivityViewModel
 import brotifypacha.scheduler.Modals.ManageScheduleDataModal
 import brotifypacha.scheduler.add_change_fragment.AddChangeFragment
+import brotifypacha.scheduler.changes_list_fragment.ChangesListFragment
 
 class ScheduleListFragment : Fragment() {
 
@@ -52,7 +55,6 @@ class ScheduleListFragment : Fragment() {
             OnScheduleLongClickListener { id ->
                 viewModel.onScheduleLongClick(id)
                 return@OnScheduleLongClickListener true
-
             })
 
         bind.newScheduleBtn.setOnClickListener {
@@ -99,7 +101,8 @@ class ScheduleListFragment : Fragment() {
                         listOf(
                                 ContextMenuModal.ModalMenuItem(0, "Удалить", R.drawable.ic_outline_delete_24px ),
                                 ContextMenuModal.ModalMenuItem(1, "Изменение на дату", R.drawable.ic_outline_event_24px),
-                                ContextMenuModal.ModalMenuItem(2, "Редактировать", R.drawable.ic_outline_edit_24px )
+                                ContextMenuModal.ModalMenuItem(2, "Просмотреть изменения", R.drawable.ic_scheduler_system_icon_24px),
+                                ContextMenuModal.ModalMenuItem(3, "Редактировать", R.drawable.ic_outline_edit_24px )
                         )
                 )
                 bottomDialog.setOnItemClickListener {menuItemId ->
@@ -127,6 +130,11 @@ class ScheduleListFragment : Fragment() {
                             })
                         }
                         2 -> {
+                            findNavController().navigate(R.id.action_view_schedule_changes, Bundle().apply {
+                                putString(ChangesListFragment.ARG_SCHEDULE_ID, data.scheduleId)
+                            })
+                        }
+                        3 -> {
                             findNavController().navigate(R.id.action_edit_schedule, Bundle().apply {
                                 putString(EditScheduleFragment.ARG_SCHEDULE_ID, data.scheduleId)
                             })

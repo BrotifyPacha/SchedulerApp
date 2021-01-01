@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:theme="@style/AppTheme"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".changes_list_fragment.ChangesListFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/changes_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_anchor="@id/bar"
+            app:icon="@drawable/ic_add_24"
+            android:text="Добавить изменение"
+            style="@style/AppTheme.Widget.ExtendedFAB"
+            />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

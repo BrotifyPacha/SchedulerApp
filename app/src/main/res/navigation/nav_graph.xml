@@ -37,6 +37,10 @@
             app:popExitAnim="@anim/fade_slide_out"
             app:popUpTo="@id/scheduleListFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_view_schedule_changes"
+            app:destination="@id/changesListFragment"
+            app:popUpTo="@id/scheduleListFragment" />
     </fragment>
     <fragment android:id="@+id/viewScheduleFragment"
               android:name="brotifypacha.scheduler.view_schedule_fragment.ViewScheduleFragment"
@@ -61,6 +65,9 @@
             app:popExitAnim="@anim/fade_slide_out"
             app:popUpTo="@id/viewScheduleFragment"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_view_schedule_changes_from_schedule"
+            app:destination="@id/changesListFragment" />
     </fragment>
     <fragment android:id="@+id/editScheduleFragment"
         android:name="brotifypacha.scheduler.edit_schedule_fragment.EditScheduleFragment"
@@ -71,4 +78,9 @@
               android:name="brotifypacha.scheduler.add_change_fragment.AddChangeFragment"
               tools:layout="@layout/fragment_add_change_modal"
               android:label="AddChangeDialogFragment"/>
+    <fragment
+        android:id="@+id/changesListFragment"
+        android:name="brotifypacha.scheduler.changes_list_fragment.ChangesListFragment"
+        android:label="changes_list_fragment"
+        tools:layout="@layout/changes_list_fragment" />
 </navigation>
