@@ -7,8 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import brotifypacha.scheduler.Constants
 import brotifypacha.scheduler.Utils
-import brotifypacha.scheduler.data_models.ResultModel
-import brotifypacha.scheduler.data_models.ScheduleModel
 import brotifypacha.scheduler.database.Schedule
 import brotifypacha.scheduler.database.SchedulerDataBase
 import kotlinx.coroutines.*

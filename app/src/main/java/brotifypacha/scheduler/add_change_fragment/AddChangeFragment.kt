@@ -12,7 +12,7 @@ import brotifypacha.scheduler.R
 import brotifypacha.scheduler.Utils
 import brotifypacha.scheduler.Utils.Companion.isSameDate
 import brotifypacha.scheduler.afterTextChanged
-import brotifypacha.scheduler.data_models.ChangeModel
+import brotifypacha.scheduler.database.Change
 import brotifypacha.scheduler.database.Schedule
 import brotifypacha.scheduler.database.SchedulerDataBase
 import kotlinx.android.synthetic.main.fragment_add_change_modal.view.*
@@ -77,7 +77,7 @@ class AddChangeFragment: Fragment(){
             CoroutineScope(Dispatchers.IO).launch {
                 val scheduleBeforeEdit = db.getSchedulesDao().getSchedule(scheduleId)
                 val changeList = ArrayList(scheduleBeforeEdit.getChangesAsList().filterNot{changeModel ->  isSameDate(changeModel.date, selectedDate)})
-                changeList.add(ChangeModel(selectedDate, lessons))
+                changeList.add(Change(selectedDate, lessons))
                 db.getSchedulesDao().update(scheduleBeforeEdit.copy(changes = Schedule.changesToStr(changeList)))
             }
             findNavController().popBackStack()

@@ -1,14 +1,10 @@
 package brotifypacha.scheduler.database
 
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
-import brotifypacha.scheduler.data_models.ChangeModel
-import brotifypacha.scheduler.data_models.ScheduleModel
 import com.google.gson.Gson
 import org.json.JSONArray
-import org.json.JSONObject
 
 @Entity(tableName = "schedules_table")
 data class Schedule(
@@ -22,19 +18,6 @@ data class Schedule(
 ){
 
     companion object {
-        fun fromModel(model: ScheduleModel): Schedule {
-            val subscribedUsersIds: ArrayList<String> = ArrayList()
-            model.subscribed_users.forEach {
-                subscribedUsersIds.add(it._id)
-            }
-            return Schedule(
-                model._id,
-                model.name,
-                model.first_day,
-                scheduleToStr(model.schedule),
-                changesToStr(model.changes)
-            )
-        }
         fun listToStr(list: List<String>): String{
             val listJson = Gson().toJson(list)
             return listJson.toString()
@@ -45,7 +28,7 @@ data class Schedule(
             return scheduleJson.toString()
         }
 
-        fun changesToStr(changes: List<ChangeModel>): String{
+        fun changesToStr(changes: List<Change>): String{
             val changesJson = Gson().toJson(changes)
             return changesJson.toString()
         }
@@ -94,9 +77,9 @@ data class Schedule(
         return schedule
     }
 
-    fun getChangesAsList() : List<ChangeModel>{
+    fun getChangesAsList() : ArrayList<Change>{
         val changesJson = JSONArray(changes)
-        val changes: ArrayList<ChangeModel> = ArrayList()
+        val changes: ArrayList<Change> = ArrayList()
         for (i in 0..changesJson.length()-1){
             val changeJson = changesJson.getJSONObject(i)
             val lessonsJson = changeJson.getJSONArray("change")
@@ -104,7 +87,7 @@ data class Schedule(
             for (l in 0..lessonsJson.length()-1){
                 lessons.add(lessonsJson.getString(l))
             }
-            val change = ChangeModel(changeJson.getLong("date"), lessons)
+            val change = Change(changeJson.getLong("date"), lessons)
             changes.add(change)
         }
         return changes
