@@ -19,7 +19,7 @@
                 tools:text="@{number}"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 app:layout_constraintTop_toTopOf="parent"/>
         <TextView
                 android:id="@+id/name"
@@ -33,6 +33,7 @@
                 android:layout_marginStart="24dp" app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="16dp"/>
         <include
+                android:id="@+id/divider"
                 android:layout_height="1dp"
                 android:layout_width="match_parent"
                 layout="@layout/divider"

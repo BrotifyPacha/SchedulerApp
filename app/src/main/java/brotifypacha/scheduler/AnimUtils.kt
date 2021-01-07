@@ -6,10 +6,10 @@ import android.widget.TextView
 class AnimUtils {
     companion object{
 
-        fun animateViewWiggle(v: View){
+        fun animateViewWiggle(v: View, wiggleAmount: Float = (v.width*0.007).toFloat() ){
             if (v.hasTransientState()) return
             v.setHasTransientState(true)
-            val by = (v.width*0.007).toFloat()
+            val by = wiggleAmount
             v.animate()
                 .translationXBy(by)
                 .setDuration(50)
@@ -41,7 +41,6 @@ class AnimUtils {
                         .start()
                 }
                 .start()
-
         }
     }
 
