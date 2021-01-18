@@ -82,5 +82,13 @@
         android:id="@+id/changesListFragment"
         android:name="brotifypacha.scheduler.changes_list_fragment.ChangesListFragment"
         android:label="changes_list_fragment"
-        tools:layout="@layout/changes_list_fragment" />
+        tools:layout="@layout/changes_list_fragment" >
+        <action
+            android:id="@+id/action_add_change_from_view_changes"
+            app:enterAnim="@anim/fade_slide_in"
+            app:exitAnim="@anim/fade_slide_out"
+            app:popEnterAnim="@anim/fade_slide_in"
+            app:popExitAnim="@anim/fade_slide_out"
+            app:destination="@id/addChangeDialogFragment" />
+    </fragment>
 </navigation>

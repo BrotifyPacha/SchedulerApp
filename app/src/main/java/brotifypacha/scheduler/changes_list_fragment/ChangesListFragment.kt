@@ -11,11 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import brotifypacha.scheduler.AnimUtils
 import brotifypacha.scheduler.ItemSwipeHelper
 import brotifypacha.scheduler.R
+import brotifypacha.scheduler.add_change_fragment.AddChangeFragment
 import brotifypacha.scheduler.databinding.ChangesListFragmentBinding
 
 class ChangesListFragment : Fragment() {
@@ -80,8 +82,7 @@ class ChangesListFragment : Fragment() {
                 if (holder !is ChangeListAdapter.ChangeViewHolder) return
                 val card = holder.binding.card
                 if (isSwipeSuccessful) {
-//                    adapter.dataSet.removeAt(holder.adapterPosition-1)
-//                    adapter.notifyItemRemoved(holder.adapterPosition)
+                    viewModel.removeChange(holder.binding.date!!)
                 } else {
                     // Duration of anim depends on translationX.
                     //(min duration = 50ms, max depends on translationX and getSwipeThreshold Ratio)
@@ -98,6 +99,12 @@ class ChangesListFragment : Fragment() {
             }
 
         }))
+
+        binding.addChangeButton.setOnClickListener {
+            findNavController().navigate(R.id.action_add_change_from_view_changes, Bundle().apply {
+                putString(AddChangeFragment.ARG_SCHEDULE_ID, requireArguments().getString(ARG_SCHEDULE_ID))
+            })
+        }
 
         return binding.root
     }

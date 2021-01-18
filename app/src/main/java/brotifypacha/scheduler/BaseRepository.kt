@@ -2,6 +2,7 @@ package brotifypacha.scheduler
 
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.LiveData
 import brotifypacha.scheduler.database.Schedule
 import brotifypacha.scheduler.database.SchedulerDataBase
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,10 @@ class BaseRepository(app: Application) {
         withContext(Dispatchers.IO){
             db.getSchedulesDao().getSchedule(scheduleId)
         }
+    }
+
+    fun getScheduleLiveData(scheduleId: String): LiveData<Schedule>{
+        return db.getSchedulesDao().getScheduleLiveData(scheduleId)
     }
 
     /**
