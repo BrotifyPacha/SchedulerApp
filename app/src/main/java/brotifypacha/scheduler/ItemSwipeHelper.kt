@@ -39,7 +39,7 @@ class ItemSwipeHelper(val listener:OnSwipeListener): RecyclerView.OnItemTouchLis
         val action = e.actionMasked
         when (action) {
             MotionEvent.ACTION_DOWN -> {
-                Log.d("TAG", "{onIntercept ACTION_DOWN}")
+//                Log.d("TAG", "{onIntercept ACTION_DOWN}")
                 currentPointerId = e.getPointerId(0)
                 initX = e.x
                 initY = e.y
@@ -47,7 +47,7 @@ class ItemSwipeHelper(val listener:OnSwipeListener): RecyclerView.OnItemTouchLis
 //                obtainVelocityTracker()
             }
             MotionEvent.ACTION_MOVE -> {
-                Log.d("TAG", "{onIntercept ACTION_MOVE}")
+//                Log.d("TAG", "{onIntercept ACTION_MOVE}")
                 if (rv.scrollState == RecyclerView.SCROLL_STATE_DRAGGING || rv.scrollState == RecyclerView.SCROLL_STATE_SETTLING) return false
                 when (listener.getSwipeDirection()) {
                     SWIPE_LEFT -> {
@@ -71,7 +71,7 @@ class ItemSwipeHelper(val listener:OnSwipeListener): RecyclerView.OnItemTouchLis
                 }
             }
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-                Log.d("TAG", "{onIntercept ACTION_UP}")
+//                Log.d("TAG", "{onIntercept ACTION_UP}")
                 currentPointerId = ACTIVE_POINTER_ID_NONE
                 selectedHolder = null
                 isInitialSwipeDirectionCorrect = null
@@ -86,12 +86,12 @@ class ItemSwipeHelper(val listener:OnSwipeListener): RecyclerView.OnItemTouchLis
         val action = e.actionMasked
         when (action) {
             MotionEvent.ACTION_MOVE -> {
-                Log.d("TAG", "{onTouch ACTION_MOVE}")
+//                Log.d("TAG", "{onTouch ACTION_MOVE}")
                 val dX = e.x - initX
                 listener.onMove(selectedHolder!!, dX)
             }
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-                Log.d("TAG", "{onTouch ACTION_UP}")
+//                Log.d("TAG", "{onTouch ACTION_UP}")
                 val dx = e.x - initX
                 if (listener.getSwipeDirection() == SWIPE_LEFT) {
                     listener.onUp(selectedHolder!!, dx < -listener.getSwipeThreshold())
@@ -105,5 +105,6 @@ class ItemSwipeHelper(val listener:OnSwipeListener): RecyclerView.OnItemTouchLis
     }
 
     override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+        //Do nothing
     }
 }
