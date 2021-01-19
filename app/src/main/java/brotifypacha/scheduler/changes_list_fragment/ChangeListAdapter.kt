@@ -13,6 +13,7 @@ import brotifypacha.scheduler.database.Change
 import brotifypacha.scheduler.databinding.ChangeListItemBinding
 import brotifypacha.scheduler.databinding.HeaderBinding
 import brotifypacha.scheduler.databinding.LessonItemBinding
+import brotifypacha.scheduler.newList_list_fragment.ChangeItemDiffUtil
 import java.lang.IllegalArgumentException
 
 class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -33,9 +34,12 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
     }
 
     fun setChanges(changes: ArrayList<Change>) {
+        val newList = ArrayList<ChangeItem>()
+        changes.forEach { it -> newList.add(ChangeItem(false, it)) }
+        val diffResult = DiffUtil.calculateDiff(ChangeItemDiffUtil.Callback(dataset, newList), true)
         dataset.clear()
         changes.forEachIndexed{ i, it -> dataset.add(i, ChangeItem(change = it)) }
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(ChangeItemDiffUtil.ListUpdateCallback(this))
     }
 
     fun toggleExpanded(position: Int){
