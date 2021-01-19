@@ -124,89 +124,89 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
                 //there's nothing at the bottom to cast shadow
                 if (isLast) binding.listView.setBackgroundResource(R.drawable.inner_shadow_top)
                 else binding.listView.setBackgroundResource(R.drawable.inner_shadow_vertical)
+                var foundNoneBlankItem = false
+                for (i in 8 downTo 0) {
+                    nameBindings[i].root.visibility = View.VISIBLE
+                    nameBindings[i].divider.visibility = View.VISIBLE
+                    if (changeItem.change.change[i].isBlank() && !foundNoneBlankItem) {
+                        nameBindings[i].root.visibility = View.GONE
+                    } else {
+                        if (!foundNoneBlankItem) {
+                            foundNoneBlankItem = true
+                            nameBindings[i].divider.visibility = View.INVISIBLE
+                        }
+                        nameBindings[i].setName(changeItem.change.change[i])
+                    }
+                }
             } else {
                 binding.listView.visibility = View.GONE
-            }
-            var foundNoneBlankItem = false
-            for (i in 8 downTo 0) {
-                nameBindings[i].root.visibility = View.VISIBLE
-                nameBindings[i].divider.visibility = View.VISIBLE
-                if (changeItem.change.change[i].isBlank() && !foundNoneBlankItem) {
-                    nameBindings[i].root.visibility = View.GONE
-                } else {
-                    if (!foundNoneBlankItem) {
-                        foundNoneBlankItem = true
-                        nameBindings[i].divider.visibility = View.INVISIBLE
-                    }
-                    nameBindings[i].setName(changeItem.change.change[i])
-                }
             }
         }
     }
 
     class ChangeItemAnimator : DefaultItemAnimator() {
 
+        var running = false
+
         override fun animateChange(oldHolder: RecyclerView.ViewHolder?, newHolder: RecyclerView.ViewHolder?, fromX: Int, fromY: Int, toX: Int, toY: Int): Boolean {
             if (newHolder == null || newHolder !is ChangeViewHolder || oldHolder !is ChangeViewHolder) {
-                dispatchChangeFinished(oldHolder, true)
-                dispatchChangeFinished(newHolder, false)
-                dispatchAnimationsFinished()
                 return false
             }
+
             val oldList = oldHolder.binding.listView
             val newList = newHolder.binding.listView
             if (oldList.visibility == newList.visibility) {
+                return false
+            }
+            val animList = ArrayList<Animator>()
+            if (oldList.visibility == View.GONE) {
+                //slide down (expand)
+                val translationY = ObjectAnimator.ofFloat(newList, View.TRANSLATION_Y, newList.height * -1f, 0f)
+                val alpha = ObjectAnimator.ofFloat(newList, View.ALPHA, 0f, 1f)
+                animList.add(translationY)
+                animList.add(alpha)
+            } else {
+                //slide up (collapse)
+                val translationY = ObjectAnimator.ofFloat(oldList, View.TRANSLATION_Y, 0f, oldList.height * -1f)
+                val alpha = ObjectAnimator.ofFloat(oldList, View.ALPHA, 1f, 0f)
+                animList.add(translationY)
+                animList.add(alpha)
+            }
+            // animating viewHolder Y position if it was changed due to scrolling
+            val oldViewTranslation = ObjectAnimator.ofFloat(oldHolder.itemView, View.TRANSLATION_Y, (toY-fromY).toFloat())
+            val newViewTranslation = ObjectAnimator.ofFloat(newHolder.itemView, View.TRANSLATION_Y, (fromY-toY).toFloat(), 0f)
+            // animating new holder alpha to appear smoothly (Otherwise new holder would blink upon first click)
+            val newViewAlpha = ObjectAnimator.ofFloat(newHolder.itemView, View.ALPHA, 0f, 1f)
+            animList.add(oldViewTranslation)
+            animList.add(newViewTranslation)
+            animList.add(newViewAlpha)
+            val set = AnimatorSet()
+            set.playTogether(animList)
+            set.addListener( onStart = {
+                running = true
+                dispatchChangeStarting(oldHolder, true)
+                dispatchChangeStarting(newHolder, false)
+                dispatchAnimationStarted(oldHolder)
+                dispatchAnimationStarted(newHolder)
+            }, onEnd = {
+                running = false
+                newList.alpha = 1f
+                oldList.alpha = 1f
+                newList.translationY = 0f
+                oldList.translationY = 0f
+                oldHolder.itemView.translationY = 0f
+                newHolder.itemView.translationY = 0f
                 dispatchChangeFinished(oldHolder, true)
                 dispatchChangeFinished(newHolder, false)
                 dispatchAnimationsFinished()
-                return false
-            }
-            if (oldList.visibility == View.GONE) {
-                //slide down (expand)
-                newList.translationY = 0f - newList.height
-                newList.alpha = 0f
-                newList.animate()
-                        .translationY(0f)
-                        .alpha(1f)
-                        .withEndAction {
-                            newList.translationY = 0f
-                            newList.alpha = 1f
-                            dispatchChangeFinished(oldHolder, true)
-                            dispatchChangeFinished(newHolder, false)
-                            dispatchAnimationsFinished()
-                        }
-                        .setDuration(moveDuration)
-                        .start()
-            } else {
-                //slide up (collapse)
-                oldList.translationY = 0f
-                oldList.alpha = 1f
-                oldList.animate()
-                        .translationY(0f - oldList.height)
-                        .alpha(0f)
-                        .withEndAction {
-                            oldList.translationY = 0f
-                            oldList.alpha = 1f
-                            dispatchChangeFinished(oldHolder, true)
-                            dispatchChangeFinished(newHolder, false)
-                            dispatchAnimationsFinished()
-                        }
-                        .setDuration(moveDuration)
-                        .start()
-            }
-            // animating viewHolder Y position if it was changed due to scrolling
-            if (fromY - toY != 0) {
-                oldHolder.itemView.animate().translationY(-(fromY-toY).toFloat()).withEndAction {
-                    oldHolder.itemView.translationY = 0f
-                    dispatchChangeFinished(oldHolder, true)
-                    dispatchAnimationsFinished()
-                }.start()
-                newHolder.itemView.translationY = (fromY-toY).toFloat()
-                newHolder.itemView.animate().translationY(0f).withEndAction {
-                    dispatchChangeFinished(newHolder, false)
-                }.start()
-            }
-            return true
+            })
+            set.start()
+            return false
+        }
+
+        override fun isRunning(): Boolean {
+            return if (!running) super.isRunning()
+            else true
         }
 
         override fun animateRemove(holder: RecyclerView.ViewHolder?): Boolean {
@@ -225,6 +225,7 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
                 holder.binding.listView.translationY = 0f
                 holder.binding.card.translationX = 0f
                 dispatchRemoveFinished(holder)
+                dispatchAnimationsFinished()
             } )
             set.playTogether(animList)
             set.start()
