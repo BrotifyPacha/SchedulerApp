@@ -40,6 +40,7 @@ class ChangesListFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.changes_list_fragment, container, false)
 
         binding.changesRecycler.layoutManager = LinearLayoutManager(inflater.context)
+        binding.changesRecycler.setChildDrawingOrderCallback {childCount, position -> childCount-position-1 }
         binding.changesRecycler.itemAnimator = ChangeListAdapter.ChangeItemAnimator()
         adapter = ChangeListAdapter(object : ChangeListAdapter.OnItemInteractListener {
             override fun onItemClick(position: Int) {
@@ -82,7 +83,13 @@ class ChangesListFragment : Fragment() {
                 if (holder !is ChangeListAdapter.ChangeViewHolder) return
                 val card = holder.binding.card
                 if (isSwipeSuccessful) {
-                    viewModel.removeChange(holder.binding.date!!)
+                    holder.binding.card.animate()
+                            .translationX( holder.itemView.width * -1f)
+                            .withEndAction {
+                                viewModel.removeChange(holder.binding.date!!)
+                                card.setBackgroundResource(R.drawable.reversed_round_corners)
+                                (card.background as AnimationDrawable).start()
+                            }
                 } else {
                     // Duration of anim depends on translationX.
                     //(min duration = 50ms, max depends on translationX and getSwipeThreshold Ratio)

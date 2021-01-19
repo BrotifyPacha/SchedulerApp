@@ -1,9 +1,13 @@
 package brotifypacha.scheduler.changes_list_fragment
 
+import android.animation.Animator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.animation.addListener
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.*
@@ -143,13 +147,7 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
     class ChangeItemAnimator : DefaultItemAnimator() {
 
         override fun animateChange(oldHolder: RecyclerView.ViewHolder?, newHolder: RecyclerView.ViewHolder?, fromX: Int, fromY: Int, toX: Int, toY: Int): Boolean {
-            if (newHolder == null) {
-                dispatchChangeFinished(oldHolder, true)
-                dispatchChangeFinished(newHolder, false)
-                dispatchAnimationsFinished()
-                return false
-            }
-            if (newHolder !is ChangeViewHolder || oldHolder !is ChangeViewHolder) {
+            if (newHolder == null || newHolder !is ChangeViewHolder || oldHolder !is ChangeViewHolder) {
                 dispatchChangeFinished(oldHolder, true)
                 dispatchChangeFinished(newHolder, false)
                 dispatchAnimationsFinished()
@@ -212,18 +210,25 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
         }
 
         override fun animateRemove(holder: RecyclerView.ViewHolder?): Boolean {
-//            if (holder !is ChangeViewHolder) return super.animateRemove(holder)
-//            holder.binding.card.animate().translationX((-holder.binding.card.width).toFloat()).start()
-            dispatchRemoveFinished(holder)
-            return true
-        }
-
-        override fun animateAdd(holder: RecyclerView.ViewHolder?): Boolean {
-            return super.animateAdd(holder)
-        }
-
-        override fun animateMove(holder: RecyclerView.ViewHolder?, fromX: Int, fromY: Int, toX: Int, toY: Int): Boolean {
-            return super.animateMove(holder, fromX, fromY, toX, toY)
+            if (holder !is ChangeViewHolder) return false
+            dispatchRemoveStarting(holder)
+            val animList = ArrayList<Animator>()
+            if (holder.binding.listView.visibility != View.GONE){
+                val listTranslationY = ObjectAnimator.ofFloat(holder.binding.listView, View.TRANSLATION_Y, holder.itemView.height * -1f)
+                animList.add(listTranslationY)
+            }
+            val cardAlpha = ObjectAnimator.ofFloat(holder.itemView, View.ALPHA, 0f)
+            animList.add(cardAlpha)
+            val set = AnimatorSet()
+            set.addListener( onEnd = {
+                holder.itemView.alpha = 1f
+                holder.binding.listView.translationY = 0f
+                holder.binding.card.translationX = 0f
+                dispatchRemoveFinished(holder)
+            } )
+            set.playTogether(animList)
+            set.start()
+            return false
         }
     }
 
