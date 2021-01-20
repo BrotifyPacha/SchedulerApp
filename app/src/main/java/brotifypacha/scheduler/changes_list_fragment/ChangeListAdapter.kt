@@ -17,7 +17,9 @@ import brotifypacha.scheduler.database.Change
 import brotifypacha.scheduler.databinding.ChangeListItemBinding
 import brotifypacha.scheduler.databinding.HeaderBinding
 import brotifypacha.scheduler.databinding.LessonItemBinding
+import brotifypacha.scheduler.databinding.PlugListItemBinding
 import brotifypacha.scheduler.newList_list_fragment.ChangeItemDiffUtil
+import kotlinx.android.synthetic.main.lesson_item.view.*
 import java.lang.IllegalArgumentException
 
 class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -90,6 +92,7 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
     class ChangeViewHolder(
             val binding: ChangeListItemBinding,
             private val nameBindings: ArrayList<LessonItemBinding>,
+            private val plugViewBinding: PlugListItemBinding,
             listener: OnItemInteractListener) : RecyclerView.ViewHolder(binding.root) {
 
         init {
@@ -109,10 +112,15 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
                     nameBindings.add(lessonBinding)
                     binding.listView.addView(lessonBinding.root)
                 }
+                val plugListItemBinding: PlugListItemBinding = DataBindingUtil.inflate(inflater, R.layout.plug_list_item, parent, false)
+                plugListItemBinding.message = "Занятий нет"
+                plugListItemBinding.divider.visibility = View.INVISIBLE
+                binding.listView.addView(plugListItemBinding.root)
+
                 val divider = binding.listView[0]
                 binding.listView.removeViewAt(0)
                 binding.listView.addView(divider)
-                return ChangeViewHolder(binding, nameBindings, listener)
+                return ChangeViewHolder(binding, nameBindings, plugListItemBinding, listener)
             }
         }
 
@@ -124,19 +132,27 @@ class ChangeListAdapter(private val listener: OnItemInteractListener): RecyclerV
                 //there's nothing at the bottom to cast shadow
                 if (isLast) binding.listView.setBackgroundResource(R.drawable.inner_shadow_top)
                 else binding.listView.setBackgroundResource(R.drawable.inner_shadow_vertical)
-                var foundNoneBlankItem = false
+                var foundNotBlankItem = false
                 for (i in 8 downTo 0) {
+                    //TODO (" Переписать тело цикла, может быть do while? ")
                     nameBindings[i].root.visibility = View.VISIBLE
                     nameBindings[i].divider.visibility = View.VISIBLE
-                    if (changeItem.change.change[i].isBlank() && !foundNoneBlankItem) {
+                    if (changeItem.change.change[i].isBlank() && !foundNotBlankItem) {
                         nameBindings[i].root.visibility = View.GONE
                     } else {
-                        if (!foundNoneBlankItem) {
-                            foundNoneBlankItem = true
+                        if (!foundNotBlankItem) {
+                            foundNotBlankItem = true
                             nameBindings[i].divider.visibility = View.INVISIBLE
                         }
                         nameBindings[i].setName(changeItem.change.change[i])
                     }
+                }
+                if (!foundNotBlankItem){
+                    plugViewBinding.root.visibility = View.VISIBLE
+                    binding.listView.divider.visibility = View.GONE
+                } else {
+                    plugViewBinding.root.visibility = View.GONE
+                    binding.listView.divider.visibility = View.VISIBLE
                 }
             } else {
                 binding.listView.visibility = View.GONE
